@@ -1,0 +1,13 @@
+<div class="overflow-x-auto shadow-md sm:rounded-lg mx-5 mt-10">
+    <div class="flex flex-row justify-end items-end mx-10">
+        <td class="">
+            <a href="/JobsAds/add" class="px-6 py-2 font-medium bg-blue-600 text-white flex flex-col p-3 rounded-3 text-center hover:underline">add new application</a>
+        </td>
+    </div>
+    <table class="w-full text-sm text-left rtl: text-gray-500 dark:text-gray-400">
+            <%- include("../components/jobsAds/tableHeaderJobsAds.ejs") %>
+        <tbody>
+            <%- include("../components/jobsAds/tableItemJobsAds.ejs") %>
+        </tbody>
+    </table>
+</div>

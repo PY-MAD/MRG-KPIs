@@ -1,12 +1,57 @@
+<% 
+    let authCheck = (locals?.activePage === "Login" || locals?.activePage === "SignUp");
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <title>Document</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%- title %> | Tanqeeb Tracker</title>
+    
+    <!-- Icons & Fonts -->
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/apple-icon.png" />
+    <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <link href="/assets/css/nucleo-icons.css" rel="stylesheet" />
+    <link href="/assets/css/nucleo-svg.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    <!-- Styling & Scripts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="/assets/css/soft-ui-dashboard-tailwind.css" rel="stylesheet" />
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <link rel="stylesheet" href="/assets/css/button.css" rel="stylesheet">
 </head>
-<body>
+<body class="m-0 font-sans text-base antialiased font-normal leading-default bg-gray-50 text-slate-500">
+    
+    <% if (!authCheck) { %>
+        <%- include("../templates/sideBar.ejs") %>
+    <% } %>
+    
+    <% if (!authCheck) { %>
+        <main class="ease-soft-in-out xl:ml-68.5 relative h-full max-h-screen rounded-xl transition-all duration-200">
+    <% } %>
+    
+    <% if (!authCheck) { %>
+        <%- include("../templates/header.ejs") %>
+    <% } %>
+    
     <%- body %>
+    
+    <% if (!authCheck) { %>
+        <%- include("../templates/footer.ejs") %>
+    <% } %>
+    
+    <% if (!authCheck) { %>
+        </main>
+    <% } %>
+    
+    <!-- Plugins & Scripts -->
+    <script src="/assets/js/plugins/chartjs.min.js" async></script>
+    <script src="/assets/js/sidenav-burger.js" async></script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="/assets/js/soft-ui-dashboard-tailwind.js?v=1.0.5" async></script>
+    
 </body>
 </html>

@@ -1,137 +1,168 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs");
+const express = require("express");
+// socket
+const { io } = require("../app");
+
 
 const LOGIN_URL = "https://saudi.tanqeeb.com/ar/employers/login";
-const APPLICANTS_URL = "https://saudi.tanqeeb.com/ar/applications/list_applications/20661691/0";
-const COOKIES_FILE_PATH = "cookies.json";
+const COOKIES_FILE_PATH = "api/data/cookies.json";
+const MAX_CONCURRENT_PAGES = 50; // 🔥 أقل عدد للدفعات لتوفير استهلاك الموارد
 
-// ✅ **بيانات تسجيل الدخول**
-const EMAIL = "alhawass@msn.com"; // 🔹 استبدل بالإيميل الخاص بك
-const PASSWORD = "Ss42371830"; // 🔹 استبدل بكلمة المرور الخاصة بك
-
-// دالة لحفظ الـ Cookies بعد تسجيل الدخول
 async function saveCookies(page) {
   const cookies = await page.cookies();
   fs.writeFileSync(COOKIES_FILE_PATH, JSON.stringify(cookies, null, 2));
-  console.log("✅ تم حفظ الـ Cookies بنجاح!");
 }
 
-// دالة لتحميل الـ Cookies لاستخدامها لاحقًا
 async function loadCookies(page) {
   if (fs.existsSync(COOKIES_FILE_PATH)) {
     const cookies = JSON.parse(fs.readFileSync(COOKIES_FILE_PATH));
     await page.setCookie(...cookies);
-    console.log("✅ تم تحميل الـ Cookies، يتم تسجيل الدخول تلقائيًا...");
   }
 }
 
-async function loginAutomatically(page) {
-  await page.goto(LOGIN_URL, { waitUntil: "domcontentloaded" });
+async function loginAutomatically(page, email, password) {
+  await page.goto(LOGIN_URL, { waitUntil: 'load' });
 
-  // إدخال البريد الإلكتروني وكلمة المرور
-  await page.type("#LoginEmployerEmail", EMAIL, { delay: 50 });
-  await page.type("#LoginEmployerPassword", PASSWORD, { delay: 50 });
+  await page.evaluate((email, password) => {
+    document.querySelector("#LoginEmployerEmail").value = email;
+    document.querySelector("#LoginEmployerPassword").value = password;
+  }, email, password);
 
-  // الضغط على Enter لمحاكاة المستخدم
-  await page.keyboard.press("Enter");
-
-  // انتظار الانتقال للصفحة التالية
+  await page.click("button.align-items-center.btn.btn-lg.btn-primary.d-flex.fs-20-md.fs-14.justify-content-center.mx-auto.w-100.w-md-75.mt-2");
   await page.waitForNavigation({ waitUntil: "domcontentloaded" });
 
-  console.log("✅ تم تسجيل الدخول بنجاح!");
-
-  // حفظ الـ Cookies لاستخدامها في المستقبل
   await saveCookies(page);
 }
 
-// دالة استخراج بيانات المتقدمين
-async function scrapeApplicants() {
-  const browser = await puppeteer.launch({ headless: false });
+// ✅ حساب الزمن المستغرق
+function calculateExecutionTime(startTime) {
+  const endTime = Date.now();
+  console.log(`⏱️ **الزمن المستغرق:** ${(endTime - startTime) / 1000} ثانية`);
+}
+
+async function scrapeApplicants(APPLICANTS_URL, email, password) {
+  io.on('connection',(socket)=>{
+    console.log("🔌 Client connected to socket");
+    socket.emit("status", "Connected to server!");
+  })
+
+  const startTime = Date.now(); // ✅ تسجيل وقت البداية
+  io.emit("serverConnection",true)
+  const browser = await puppeteer.launch({
+    headless: false
+  });
+
   const page = await browser.newPage();
-  await page.setViewport({ width: 1366, height: 768 });
+  await page.setViewport({ width: 1280, height: 720 });
+
+  // ✅ منع تحميل الصور والفيديوهات لتسريع Puppeteer
+  await page.setRequestInterception(true);
+  page.on("request", (req) => {
+    if (["image", "font", "media"].includes(req.resourceType())) {
+      req.abort();
+    } else {
+      req.continue();
+    }
+  });
 
   try {
-    // تحميل الـ Cookies إن وجدت
     await loadCookies(page);
     await page.goto(APPLICANTS_URL, { waitUntil: "domcontentloaded" });
 
-    // التحقق من نجاح تسجيل الدخول
     if (page.url().includes("login")) {
-      console.log("🔄 يتم تسجيل الدخول تلقائيًا...");
-      await loginAutomatically(page);
+      await loginAutomatically(page, email, password);
     }
 
     console.log("✅ تم تسجيل الدخول! جاري استخراج بيانات المتقدمين...");
+    io.emit("serverMsg","تم تسجيل الدخول بنجاح");
+    await page.waitForSelector(".card-container a[href^='/ar/profile/']", { timeout: 5000 });
 
-    // جلب روابط المتقدمين
-    await page.goto(APPLICANTS_URL, { waitUntil: "domcontentloaded" });
     const applicantsLinks = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll(".card-container a[href^='/ar/profile/']"))
-        .map(a => a.href);
+      return Array.from(document.querySelectorAll(".card-container a[href^='/ar/profile/']")).map(a => a.href);
     });
 
     console.log(`✅ تم استخراج ${applicantsLinks.length} متقدم.`);
+    io.emit("serverMsg",`✅ تم استخراج ${applicantsLinks.length} متقدم.`);
+    io.emit("totalFromServer",applicantsLinks.length);
 
     let applicantsData = [];
 
-    for (let link of applicantsLinks) {
-      console.log(`🔍 استخراج البيانات من: ${link}`);
-      await page.goto(link, { waitUntil: "domcontentloaded" });
+    // ✅ فتح عدد محدد من الصفحات مرة واحدة بدلًا من فتح/إغلاق كل مرة
+    const workerPages = await Promise.all(
+      Array.from({ length: MAX_CONCURRENT_PAGES }, () => browser.newPage())
+    );
 
-      let applicant = await page.evaluate((pageLink) => {
-        const getText = (selector) => document.querySelector(selector)?.innerText.trim() || "غير متوفر";
+    let totalFinished = 0;
+    // ✅ تقسيم الروابط إلى دفعات وإرسالها إلى الصفحات المفتوحة
+    for (let i = 0; i < applicantsLinks.length; i += MAX_CONCURRENT_PAGES) {
+      const batchLinks = applicantsLinks.slice(i, i + MAX_CONCURRENT_PAGES);
+      console.log(`🔄 معالجة ${batchLinks.length} متقدم في دفعة واحدة...`);
+      io.emit("serverMsg",`🔄 معالجة ${batchLinks.length} متقدم في دفعة واحدة...`);
+      totalFinished+= batchLinks.length
+      io.emit("doneFromServer",totalFinished);
 
-        const getTableValue = (label) => {
-          const tables = document.querySelectorAll(".col-md-6 table.table-text tbody");
-          for (let table of tables) {
-            let rows = table.querySelectorAll("tr");
-            for (let row of rows) {
-              let rowLabel = row.querySelector("td:first-child")?.innerText.trim();
-              if (rowLabel === label) {
-                return row.querySelector("td:last-child")?.innerText.trim() || "غير متوفر";
+      const batchResults = await Promise.all(
+        batchLinks.map(async (link, index) => {
+          const applicantPage = workerPages[index % MAX_CONCURRENT_PAGES]; // إعادة استخدام الصفحة
+          await applicantPage.goto(link, { waitUntil: "domcontentloaded" });
+
+          let applicant = await applicantPage.evaluate(() => {
+            const getText = (selector) => document.querySelector(selector)?.innerText.trim() || "غير متوفر";
+
+            const getTableValue = (label) => {
+              const tables = document.querySelectorAll(".col-md-6 table.table-text tbody");
+              for (let table of tables) {
+                let rows = table.querySelectorAll("tr");
+                for (let row of rows) {
+                  let rowLabel = row.querySelector("td:first-child")?.innerText.trim();
+                  if (rowLabel === label) {
+                    return row.querySelector("td:last-child")?.innerText.trim() || "غير متوفر";
+                  }
+                }
               }
-            }
-          }
-          return "غير متوفر";
-        };
+              return "غير متوفر";
+            };
 
-        return {
-          name: getText("h3.fs-28"),
-          job: getText(".text-secondary.font-weight-semibold.fs-16"),
-          age: getTableValue("تاريخ الميلاد:").split("(")[1]?.replace(")", "").trim() || "غير متوفر",
-          experience: getTableValue("الخبرة:"),
-          national: getTableValue("الجنسية:"),
-          city: getTableValue("المدينة:") === "-" ? getTableValue("العنوان :") : getTableValue("المدينة:"),
-          phone: getTableValue("رقم الجوال:"),
-          email: getTableValue("البريد الإلكتروني:"),
-          about: getText(".text-primary-2.fs-14"),
-          expectedSalary: getTableValue("الحد الأدنى للراتب:"),
-          edu: Array.from(document.querySelectorAll(".fa-graduation-cap ~ .card-body .mb-3 h6"))
-            .map(e => e.innerText.trim()),
-          experienceArray: Array.from(document.querySelectorAll(".fa-briefcase ~ .card-body .mb-3 h6"))
-            .map(e => e.innerText.trim()),
-          skills: Array.from(document.querySelectorAll(".fa-fingerprint ~ .card-body button"))
-            .map(e => e.innerText.trim()),
-          url_cv: document.querySelector("a[href*='/users/download_cv/']")?.href || "غير متوفر",
-          url: pageLink // ✅ تم إضافة رابط الصفحة الخاصة بالمتقدم
-        };
-      }, link);
+            return {
+              الاسم: getText("h3.fs-28"),
+              الوظيفة: getText(".text-secondary.font-weight-semibold.fs-16"),
+              العمر: getTableValue("تاريخ الميلاد:").split("(")[1]?.replace(")", "").trim() || "غير متوفر",
+              الخبرة: getTableValue("الخبرة:"),
+              الجنسية: getTableValue("الجنسية:"),
+              المدينة: getTableValue("المدينة:") === "-" ? getTableValue("العنوان :") : getTableValue("المدينة:"),
+              الجوال: getTableValue("رقم الجوال:"),
+              "البريد الإلكتروني": getTableValue("البريد الإلكتروني:"),
+              نبذة: getText(".text-primary-2.fs-14"),
+              الحد_الأدنى_للراتب: getTableValue("الحد الأدنى للراتب:"),
+              رابط_السيرة_الذاتية: document.querySelector("a[href*='/users/download_cv/']")?.href || "غير متوفر",
+              رابط_الصفحة: window.location.href
+            };
+          });
 
-      applicantsData.push(applicant);
+          return applicant;
+        })
+      );
+
+      applicantsData.push(...batchResults.filter(Boolean));
     }
 
-    // حفظ البيانات بصيغة JSON
     const filePath = `applicants_${Date.now()}.json`;
-    fs.writeFileSync(filePath, JSON.stringify(applicantsData, null, 2), "utf-8");
+    fs.writeFileSync("api/data/"+filePath, JSON.stringify(applicantsData, null, 2), "utf-8");
 
     console.log(`📁 تم حفظ البيانات في: ${filePath}`);
 
+    calculateExecutionTime(startTime); // ✅ حساب الزمن بعد انتهاء الكود
+    io.emit("serverConnection",false)
+    return {
+        file:filePath,
+        count:applicantsLinks.length
+    };
   } catch (error) {
     console.error("❌ حدث خطأ:", error);
   } finally {
     await browser.close();
   }
 }
-
-// تشغيل الكود
-scrapeApplicants();
+// ✅ تشغيل الكود مع فتح صفحة واحدة فقط لتحسين الأداء
+module.exports = scrapeApplicants;

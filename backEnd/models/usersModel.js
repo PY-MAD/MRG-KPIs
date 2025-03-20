@@ -17,7 +17,13 @@ const userSchema = new mongoose.Schema({
         type:Date,
         require:true,
         default:Date.now
+    },
+    validate:{
+        type:Boolean,
+        default:false,
+        require:true,
     }
+    
 })
 
-module.exports = mongoose.model(userSchema,"users");
+module.exports = mongoose.model("users",userSchema);

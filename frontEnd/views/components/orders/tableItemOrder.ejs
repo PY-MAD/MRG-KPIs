@@ -1,36 +1,26 @@
 <tr class="bg-white border-b border-gray-200 hover:bg-gray-50">
     <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Ahmed Shabana</a>
+        <a href="<%= candidate.url %>" class="font-medium text-blue-600 dark:text-blue-500 hover:underline"><%= candidate.name %></a>
     </th>
     <td class="px-6 py-2">
-        محاسب
+        <%= candidate.job_title %>
     </td>
     <td class="px-6 py-2">
-        ٣٣ سنة
+        <%= candidate.age %>
     </td>
     <td class="px-6 py-2">
-        ١٠ سنوات
+        <%= candidate.experience %>
     </td>
     <td class="px-6 py-2">
-        مصر
+        <%= candidate.nationality %>
     </td>
     <td class="px-6 py-2 text-wrap">
-        السلام عليكم ،،\nبخصوص وظيفة محاسبه / مراجعه\nمحاسب ومراجع وعندي خبره 12في:\nالحسابات العامه وحسابات المبيعات
-        ومديونيه العملاء والتكاليف والتدقيق الخارجي والمراجعة الداخلية.\n\nخبره في برامج Erp المحاسبيه.\nلدي خبره في
-        اعداد القوائم المالية وضريبة القيمه المضافة.\n\nخبره في شئون الموظفين في اعداد الرواتب ومراجعة الاجازات والاوفر
-        تايم.\n\nاحمل رخصة قيادة.\n.............................................\n\nHello,,,\nAbout the job of an
-        accounting and auditing\nI am an accountant and auditor and have 11 years of experience in:\nGeneral accounts,
-        sales accounts, customer indebtedness, costs, external audit and internal audit.\n\nExperience in Erp accounting
-        programs.\nI have experience in preparing financial statements and VAT.\n\nExperience in personnel affairs in
-        preparing salaries, auditing vacations and overtime.\n\nI have a driver's license.\nعرض المزيد"
+        <%= candidate.about %>
     </td>
     <td class="px-6 py-2">
-        -
+        <%= candidate.phone %>
     </td>
     <td class="px-6 py-2">
-        -
-    </td>
-    <td class="px-6 py-2">
-        <a href="#" class="font-medium bg-blue-600 text-white flex flex-col p-3 rounded-3 text-center hover:underline">Download CV</a>
+        <a href="<%= candidate.job_title %>" class="font-medium bg-blue-600 text-white flex flex-col p-3 rounded-3 text-center hover:underline">Download CV</a>
     </td>
 </tr>

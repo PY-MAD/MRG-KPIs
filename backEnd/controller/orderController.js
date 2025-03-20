@@ -17,8 +17,9 @@ module.exports.GETordersView = async (req, res) => {
         const findInCandidateMdoel = await candidateModel.find({
             applicationId:findApplication._id
         });
-        if(!findInCandidateMdoel){
-            await AddInDatabase(findApplication);
+        console.log(findInCandidateMdoel);
+        if(!findInCandidateMdoel.length){
+            await AddInDatabase(findApplication,order);
         }
         return res.render("order/listOrder",
             {
@@ -35,7 +36,7 @@ module.exports.GETordersView = async (req, res) => {
     }
 };
 
-async function AddInDatabase(findApplication){
+async function AddInDatabase(findApplication,order){
     
     const setValuePath = path.join(__dirname, "../api/data", findApplication.path);
 
@@ -74,6 +75,10 @@ async function AddInDatabase(findApplication){
 
         })
         // await candidateModel.create()
+    }
+    return {
+        status:200,
+        msg:"done"
     }
 
 }

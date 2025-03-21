@@ -1,0 +1,26 @@
+<% let sideBarItem="../../views/components/sideBarItem.ejs" %>
+<li class="w-full mt-4">
+    <h6 class="pl-6 ml-2 text-xs font-bold leading-tight uppercase opacity-60">
+        Tanqeeb Trackring
+    </h6>
+</li>
+<%- include(sideBarItem,{ link:"/", icon:"<span class='material-symbols-outlined'>team_dashboard</span>",
+    title:"Dashboard",
+    activePath:activePage
+    })
+    %>
+    <%- include(sideBarItem,{ link:"/tanqeeb/JobsAds", icon:"<span class='material-symbols-outlined'>Assignment</span>",
+        title:"Jobs Ads",
+        activePath:activePage
+        }) %>
+
+        <%- include(sideBarItem,{ link:"/tanqeeb/Orders", icon:"<span class='material-symbols-outlined'>List</span>",
+            title:"Orders",
+            activePath:activePage
+            }) %>
+            <%- include(sideBarItem,{ 
+                link:"/tanqeeb/Target", 
+                icon:"<span class='material-symbols-outlined'>ads_click</span>",
+                title:"Target",
+                activePath:activePage
+                }) %>

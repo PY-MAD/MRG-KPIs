@@ -1,4 +1,4 @@
-const ApplicationModel = require("../models/ApplicationModel");
+const ApplicationModel = require("../../models/ApplicationModel");
 
 module.exports.dashboard = ((req, res) => {
     res.render("tanqeeb/dashboard",
@@ -10,20 +10,10 @@ module.exports.dashboard = ((req, res) => {
         }
     );
 })
-module.exports.profile = ((req, res) => {
-    res.render("profile",
-        {
-            title: "Profile",
-            layout: "../layout.ejs",
-            activePage: "Profile",
-            user: req.session.user
-        }
-    );
-})
 module.exports.JobsAds = async(req, res) => {
     try {
         const findAllFetches = await ApplicationModel.find();
-        res.render("tanqeeb/tanqeeb/JobsAds",
+        res.render("tanqeeb/JobsAds",
             {
                 title: "Jobs Ads",
                 layout: "../layout.ejs",
@@ -50,16 +40,6 @@ module.exports.orders = (async(req, res) => {
 })
 module.exports.target = ((req, res) => {
     res.render("tanqeeb/target",
-        {
-            title: "Admin",
-            layout: "../layout.ejs",
-            activePage: "Admin",
-            user: req.session.user
-        }
-    );
-})
-module.exports.admin = ((req, res) => {
-    res.render("admin",
         {
             title: "Admin",
             layout: "../layout.ejs",

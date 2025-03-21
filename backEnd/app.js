@@ -7,7 +7,7 @@ require('dotenv').config(".env");
 const session = require("express-session");
 const flash = require("express-flash");
 
-const senderMail = require("express-mailer");
+const nodemailer = require('nodemailer');
 
 // socket
 const http = require("http");
@@ -15,7 +15,7 @@ const { Server } = require("socket.io");
 const server = http.createServer(app);
 const io = new Server(server); // ✅ Main Socket.io instance
 
-module.exports = { server, app, io };
+
 
 app.use(session({
     secret: "MAD",
@@ -24,21 +24,19 @@ app.use(session({
 }));
 
 //mailer
-senderMail.extend(app, {
-    from: process.env.EMAIL_FROM,
+const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST || "smtp.office365.com",
-    secureConnection: false,
     port: 587,
-    transportMethod: "SMTP",
+    secure: false, // `true` for port 465, `false` for other ports
     auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        pass: process.env.EMAIL_PASS,
     },
     tls: {
-        rejectUnauthorized: false
-    }
+        rejectUnauthorized: false,
+    },
 });
-
+module.exports = { server, app, io ,transporter};
 app.use(methodOverride('_method'))
 app.use(flash());
 app.use(express.urlencoded({ extended: true }));
@@ -54,15 +52,11 @@ app.use("/assets", express.static("../frontEnd/assets"));
 
 
 const mainRoutes = require("./routes/mainRoutes");
-const authRoutes = require("./routes/authRoutes");
-const apiRoutes = require("./routes/apiRoutes");
-const jobsAdsRoutes = require("./routes/jobsAdsRouter");
-const orderRoutes = require("./routes/orderRoutes");
+const tanqeeb = require("./routes/tanqeeb/tanqeebRoutes");
+const auth = require("./routes/authRoutes");
 app.use("/", mainRoutes)
-app.use("/api", apiRoutes)
-app.use("/auth", authRoutes)
-app.use("/JobsAds", jobsAdsRoutes)
-app.use("/Orders", orderRoutes)
+app.use("/tanqeeb",tanqeeb)
+app.use("/auth",auth)
 
 
 server.listen(3000, () => {

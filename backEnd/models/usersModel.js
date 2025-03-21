@@ -18,11 +18,11 @@ const userSchema = new mongoose.Schema({
         require:true,
         default:Date.now
     },
-    validate:{
+    isValidated:{
         type:Boolean,
         default:false,
         require:true,
-    }
+    },
     
 })
 

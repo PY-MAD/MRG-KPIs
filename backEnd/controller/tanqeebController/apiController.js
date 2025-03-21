@@ -1,9 +1,5 @@
-const apiCall = require("../api/getOrders");
 const path = require("path");
 const fs = require("fs");
-
-const DATA_FOLDER = path.join(__dirname, "../api/data");
-
 
 module.exports.GETReadFile = async (req, res, fileName) => {
     try {

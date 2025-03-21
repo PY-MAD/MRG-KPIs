@@ -1,5 +1,5 @@
-const scrapeApplicants = require("../api/getOrders");
-const ApplicationModel = require("../models/ApplicationModel");
+const scrapeApplicants = require("../../api/getOrders");
+const ApplicationModel = require("../../models/ApplicationModel");
 const fs = require("fs");
 const path = require("path");
 
@@ -8,7 +8,7 @@ const path = require("path");
 //  */
 
 module.exports.GETAddJobsAdsPage = (req,res)=>{
-    res.render("jobsAds/add",
+    res.render("tanqeeb/jobsAds/add",
         {
             title:"add new application",
             layout:"../layout.ejs",

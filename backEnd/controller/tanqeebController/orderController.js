@@ -1,7 +1,7 @@
-const applicationsModel = require("../models/ApplicationModel");
+const applicationsModel = require("../../models/ApplicationModel");
 const path = require("path");
 const fs = require("fs");
-const candidateModel = require("../models/candidateModel")
+const candidateModel = require("../../models/candidateModel")
 /**
  * GET orders
  */
@@ -11,7 +11,7 @@ module.exports.GETordersView = async (req, res) => {
         const findApplication = await applicationsModel.findById(order);
         if (!findApplication) {
             req.flash("error", "Can't find the application, please re-add it here.");
-            return res.redirect("/JobsAds");
+            return res.redirect("/tanqeeb/JobsAds");
         }
 
         const findInCandidateMdoel = await candidateModel.find({
@@ -21,7 +21,7 @@ module.exports.GETordersView = async (req, res) => {
         if(!findInCandidateMdoel.length){
             await AddInDatabase(findApplication,order);
         }
-        return res.render("order/listOrder",
+        return res.render("tanqeeb/order/listOrder",
             {
                 title: "order - "+findApplication.name,
                 layout: "../layout.ejs",
@@ -44,7 +44,7 @@ async function AddInDatabase(findApplication,order){
     if (!fs.existsSync(setValuePath)) {
         console.error("❌ File not found:", setValuePath);
         req.flash("error", "File not found, please check the application data.");
-        return res.redirect("/JobsAds");
+        return res.redirect("/tanqeeb/JobsAds");
     }
 
     const readFile = fs.readFileSync(setValuePath, "utf8");

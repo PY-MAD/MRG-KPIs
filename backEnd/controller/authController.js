@@ -2,6 +2,9 @@ const usersModel = require("../models/usersModel");
 const validateModel = require("../models/validateModel");
 const bcrypt = require("bcrypt");
 const crypto = require('crypto')
+const path = require("path");
+const {transporter} = require("../app");
+const ejs = require("ejs");
 
 /**
  * GET Login auth page
@@ -40,8 +43,8 @@ module.exports.POSTLogin = async (req, res) => {
             req.flash("error", "The email or password is incorrect");
             return res.redirect("/auth/login");
         }
-        const isValidateUser = findUser.validate;
-        if(!isValidateUser){
+        const isValidateUser = findUser.isValidated;
+        if (!isValidateUser) {
             req.flash("error", "your account not validated please check your email");
             return res.redirect("/auth/login");
         }
@@ -90,9 +93,9 @@ module.exports.POSTSignUp = async (req, res) => {
             validateToken: token
         })
         const newValidateUser = await validateModel.create({
-            userId:newUser.id,
-            validateCode:code,
-            validateToken:token
+            userId: newUser.id,
+            validateCode: code,
+            validateToken: token
         })
         newValidateUser.save();
         newUser.save();
@@ -121,35 +124,47 @@ module.exports.GETLogout = (req, res) => {
 }
 
 
-module.exports.senderValidationEmail = (req, res,email,code,token,name) => {
-    res.mailer.send('../email/templateEmail.ejs', {
-        to: email,
-        subject: 'Confirm Your Email - MR',
-        name: name,
-        code: code,
-        activationLink: 'http://localhost:3000/auth/validationEmail/' + token
-    }, (err) => {
-        if (err) {
-            console.log(err);
-            res.send('Error sending email.');
-            return;
-        }
-        res.redirect("/auth/validationEmail/" + token)
-    });
-}
-module.exports.GETValidateUser = async(req, res) => { 
+module.exports.senderValidationEmail = async (req, res, email, code, token, name) => {
+    try {
+        // Render the EJS template to HTML
+        const emailTemplatePath = path.join(__dirname,"../../frontEnd/views/email/templateEmail.ejs");
+
+        const emailHtml = await ejs.renderFile(emailTemplatePath, {
+            name: name,
+            code: code,
+            activationLink: `http://localhost:3000/auth/validationEmail/${token}`,
+        });
+
+        // Define email options
+        const mailOptions = {
+            from: process.env.EMAIL_FROM,
+            to: email,
+            subject: "Confirm Your Email - MR",
+            html: emailHtml,
+        };
+
+        // Send email
+        await transporter.sendMail(mailOptions);
+        console.log("Email sent successfully to:", email);
+        res.redirect(`/auth/validationEmail/${token}`);
+    } catch (error) {
+        console.error("Error sending email:", error);
+        res.send("Error sending email.");
+    }
+};
+module.exports.GETValidateUser = async (req, res) => {
     const { token } = req.params
     const findToken = await validateModel.findOne({
-        validateToken:token
+        validateToken: token
     });
-    if(!findToken){
+    if (!findToken) {
         return res.redirect("/auth/login");
     }
     res.render("auth/validateUser", {
         title: "validate user",
         layout: "../layout.ejs",
         activePage: "auth",
-        token:req.params.token
+        token: req.params.token
     })
 
 }
@@ -159,30 +174,30 @@ module.exports.GETValidateUser = async(req, res) => {
  * @param {*} req 
  * @param {*} res 
  */
-module.exports.POSTValidateUser = async(req, res) => { 
-    const {token} = req.params;
-    const {index1,index2,index3,index4,index5,index6} = req.body;
+module.exports.POSTValidateUser = async (req, res) => {
+    const { token } = req.params;
+    const { index1, index2, index3, index4, index5, index6 } = req.body;
     console.log(req.params);
-    const userCode = index1+index2+index3+index4+index5+index6;
+    const userCode = index1 + index2 + index3 + index4 + index5 + index6;
     try {
         const findToken = await validateModel.findOne({
-            validateToken:token
+            validateToken: token
         })
         console.log(findToken.validateCode)
         console.log(userCode)
-        if(findToken.validateCode != userCode){
-            req.flash("error","the code is wrong !")
-            return res.redirect("/auth/validationEmail/"+token)
+        if (findToken.validateCode != userCode) {
+            req.flash("error", "the code is wrong !")
+            return res.redirect("/auth/validationEmail/" + token)
         }
-        const findUser = await usersModel.findByIdAndUpdate(findToken.userId,{
-            validate:true
+        const findUser = await usersModel.findByIdAndUpdate(findToken.userId, {
+            isValidated: true
         });
         await validateModel.findByIdAndDelete(findToken.id);
         findUser.save();
-        req.flash("success","your account has been validated !");
+        req.flash("success", "your account has been validated !");
         res.redirect("/auth/login");
     } catch (error) {
         console.error(error);
     }
-    
+
 }

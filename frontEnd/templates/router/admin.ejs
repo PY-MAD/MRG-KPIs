@@ -1,0 +1,12 @@
+<% let sideBarItem="../../views/components/sideBarItem.ejs" %>
+<li class="w-full mt-4">
+    <h6 class="pl-6 ml-2 text-xs font-bold leading-tight uppercase opacity-60">admin center
+    </h6>
+</li>
+<%- 
+include(sideBarItem,{ 
+    link:"/Admin", 
+    icon:"<span class='material-symbols-outlined'>admin_panel_settings</span>",
+    title:"Admin",
+    activePath:activePage
+    }) %>

@@ -46,7 +46,6 @@ module.exports.POSTAddJobsAdsPage = async(req,res)=>{
 
 module.exports.DeleteJobsAds = async (req, res) => {
     const { id } = req.params;
-    console.log("Deleting Job ID:", id);
 
     try {
         const findTheJobs = await ApplicationModel.findById(id);

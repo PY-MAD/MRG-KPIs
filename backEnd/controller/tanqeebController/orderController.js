@@ -94,7 +94,6 @@ module.exports.reFetchData = async(req,res)=>{
     try {
         const {order} = req.params;
         const {email,password,url,path,name} = await ApplicationModel.findById(order);
-        console.log(email,password,url,path);
         const isDeleteFiled = deleteFile(path);
         if(isDeleteFiled.status == 404){
             return isDeleteFiled.data;

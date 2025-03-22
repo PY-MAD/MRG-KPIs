@@ -1,12 +1,14 @@
 const ApplicationModel = require("../../models/ApplicationModel");
 
-module.exports.dashboard = ((req, res) => {
+module.exports.dashboard = (async(req, res) => {
+    const findAllApplecation = await ApplicationModel.find();
     res.render("tanqeeb/dashboard",
         {
             title: "Dashboard",
             layout: "../layout.ejs",
             activePage: "Dashboard",
             user: req.session.user,
+            application:findAllApplecation
         }
     );
 })
@@ -41,9 +43,9 @@ module.exports.orders = (async(req, res) => {
 module.exports.target = ((req, res) => {
     res.render("tanqeeb/target",
         {
-            title: "Admin",
+            title: "Target",
             layout: "../layout.ejs",
-            activePage: "Admin",
+            activePage: "Target",
             user: req.session.user
         }
     );

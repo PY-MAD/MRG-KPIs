@@ -77,3 +77,8 @@ module.exports.DeleteJobsAds = async (req, res) => {
         res.status(500).json({ message: "Internal server error!" });
     }
 };
+
+module.exports.getData = async(req,res)=>{
+    const find = await ApplicationModel.find();
+    return res.json(find);
+}

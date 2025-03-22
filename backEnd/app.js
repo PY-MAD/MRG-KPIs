@@ -48,7 +48,8 @@ const db = require("./config/db");
 // Set views and layout
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../frontEnd/views/pages")); // Adjust if needed
-app.use("/assets", express.static("../frontEnd/assets"));
+app.use("/assets", express.static(path.join("../frontEnd/assets")));
+
 
 
 const mainRoutes = require("./routes/mainRoutes");

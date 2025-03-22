@@ -3,8 +3,8 @@ const JobsAdsController = require("../../controller/tanqeebController/jobsAdsCon
 const { isAuth } = require("../../middleware/authMiddleware");
 
 router.get("/addNewApplication",isAuth,JobsAdsController.GETAddJobsAdsPage);
-router.post("/addNewApplication",isAuth,tanqeeb/JobsAdsController.POSTAddJobsAdsPage);
+router.post("/addNewApplication",isAuth,JobsAdsController.POSTAddJobsAdsPage);
 //delete applicationJob
-router.delete("/delete/:id",tanqeeb/JobsAdsController.DeleteJobsAds);
-
+router.delete("/delete/:id",JobsAdsController.DeleteJobsAds);
+router.get("/fetchApplications",JobsAdsController.getData);
 module.exports = router;

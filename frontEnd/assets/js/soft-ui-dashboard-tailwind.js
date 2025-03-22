@@ -17,7 +17,7 @@
 */
 var page = window.location.pathname.split("/").pop().split(".")[0];
 var aux = window.location.pathname.split("/");
-var to_build = (aux.includes('pages')?'../':'./');
+var to_build = "http://localhost:3000/";
 var root = window.location.pathname.split("/")
 if (!aux.includes("pages")) {
   page = "dashboard";
@@ -49,6 +49,7 @@ if (document.querySelector("[fixed-plugin]")) {
 }
 
 if (document.querySelector("[navbar-main]")) {
+  console.log(to_build);
   loadJS(to_build + "assets/js/sidenav-burger.js", true);
   loadJS(to_build + "assets/js/navbar-sticky.js", true);
 }

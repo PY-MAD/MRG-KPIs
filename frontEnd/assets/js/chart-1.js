@@ -1,71 +1,94 @@
+// chart 2
+
+let data = [];
+fetch("http://localhost:3000/tanqeeb/JobsAds/fetchApplications")
+  .then((item) => {
+    item.json()
+      .then((item) => {
+        item.forEach((item) => {
+          data.push(item.countOfApplications);
+        })
+        createChart2();
+        createChart1();
+      })
+  })
+  .catch((error) => {
+    console.log(error);
+  })
+
+
 // chart 1
+let createChart2 = () => {
 
-var ctx = document.getElementById("chart-bars").getContext("2d");
+  var ctx = document.getElementById("chart-bars").getContext("2d");
 
-new Chart(ctx, {
-  type: "bar",
-  data: {
-    labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    datasets: [
-      {
-        label: "Sales",
-        tension: 0.4,
-        borderWidth: 0,
-        borderRadius: 4,
-        borderSkipped: false,
-        backgroundColor: "#fff",
-        data: [450, 200, 100, 220, 500, 100, 400, 230, 500],
-        maxBarThickness: 6,
-      },
-    ],
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-    interaction: {
-      intersect: false,
-      mode: "index",
-    },
-    scales: {
-      y: {
-        grid: {
-          drawBorder: false,
-          display: false,
-          drawOnChartArea: false,
-          drawTicks: false,
+  new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep","Oct","Nov","Dec"],
+      datasets: [
+        {
+          label: "Request",
+          tension: 0.4,
+          borderWidth: 0,
+          borderRadius: 4,
+          borderSkipped: false,
+          backgroundColor: "#fff",
+          data: data,
+          maxBarThickness: 6,
         },
-        ticks: {
-          suggestedMin: 0,
-          suggestedMax: 600,
-          beginAtZero: true,
-          padding: 15,
-          font: {
-            size: 14,
-            family: "Open Sans",
-            style: "normal",
-            lineHeight: 2,
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false,
+        },
+      },
+      interaction: {
+        intersect: false,
+        mode: "index",
+      },
+      scales: {
+        y: {
+          grid: {
+            drawBorder: false,
+            display: false,
+            drawOnChartArea: false,
+            drawTicks: false,
           },
-          color: "#fff",
+          ticks: {
+            suggestedMin: 0,
+            suggestedMax: 600,
+            beginAtZero: true,
+            padding: 15,
+            font: {
+              size: 14,
+              family: "Open Sans",
+              style: "normal",
+              lineHeight: 2,
+            },
+            color: "#fff",
+          },
         },
-      },
-      x: {
-        grid: {
-          drawBorder: false,
-          display: false,
-          drawOnChartArea: false,
-          drawTicks: false,
-        },
-        ticks: {
-          display: false,
+        x: {
+          grid: {
+            drawBorder: false,
+            display: false,
+            drawOnChartArea: false,
+            drawTicks: false,
+          },
+          ticks: {
+            display: false,
+          },
         },
       },
     },
-  },
-});
+  });
+  
+  // end chart 1
+  
 
-// end chart 1
+}

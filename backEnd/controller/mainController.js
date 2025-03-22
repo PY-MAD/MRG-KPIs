@@ -16,7 +16,11 @@ module.exports.profile = ((req, res) => {
             title: "Profile",
             layout: "../layout.ejs",
             activePage: "Profile",
-            user: req.session.user
+            user: req.session.user,
+            message: {
+                error: req.flash("error"),
+                success: req.flash("success")
+            }
         }
     );
 })
@@ -44,7 +48,11 @@ module.exports.orders = (async(req, res) => {
             layout: "../layout.ejs",
             activePage: "Orders",
             user: req.session.user,
-            applications:findAllFetches
+            applications:findAllFetches,
+            message: {
+                error: req.flash("error"),
+                success: req.flash("success")
+            }
         }
     );
 })

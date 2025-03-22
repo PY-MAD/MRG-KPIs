@@ -1,61 +1,120 @@
-<% 
-    let authCheck = (locals?.activePage === "auth");
-%>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%- title %> | Tanqeeb Tracker</title>
-    
-    <!-- Icons & Fonts -->
-    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/apple-icon.png" />
-    <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="/assets/css/nucleo-icons.css" rel="stylesheet" />
-    <link href="/assets/css/nucleo-svg.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    
-    <!-- Styling & Scripts -->
-     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="/assets/css/soft-ui-dashboard-tailwind.css" rel="stylesheet" />
-    <script src="https://unpkg.com/@popperjs/core@2"></script>
-    <link rel="stylesheet" href="/assets/css/button.css" rel="stylesheet">
-    <script src="/socket.io/socket.io.js"></script>
-</head>
-<body class="m-0 font-sans text-base antialiased font-normal leading-default bg-gray-50 text-slate-500">
-    
-    <% if (!authCheck) { %>
-        <%- include("../templates/sideBar.ejs") %>
-    <% } %>
-    
-    <% if (!authCheck) { %>
-        <main class="ease-soft-in-out xl:ml-68.5 relative h-full max-h-screen rounded-xl transition-all duration-200">
-    <% } %>
-    
-    <% if (!authCheck) { %>
-        <%- include("../templates/header.ejs") %>
-    <% } %>
-    
-    <%- body %>
-    
-    <% if (!authCheck) { %>
-        <%- include("../templates/footer.ejs") %>
-    <% } %>
-    
-    <% if (!authCheck) { %>
-        </main>
-    <% } %>
-    
-    <!-- Plugins & Scripts -->
-    <script src="/assets/js/plugins/chartjs.min.js" async></script>
-    <script src="/assets/js/sidenav-burger.js" async></script>
-    <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <script src="/assets/js/soft-ui-dashboard-tailwind.js?v=1.0.5" async></script>
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
-    <script src="/assets/js/sidebar/sidebar.js" async></script>
-</body>
-</html>
+<% let authCheck=(locals?.activePage==="auth" ); %>
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title><%- title %> | Tanqeeb Tracker</title>
+
+        <!-- Icons & Fonts -->
+        <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/apple-icon.png" />
+        <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+        <link href="/assets/css/nucleo-icons.css" rel="stylesheet" />
+        <link href="/assets/css/nucleo-svg.css" rel="stylesheet" />
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+        <!-- Styling & Scripts -->
+
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="/assets/css/soft-ui-dashboard-tailwind.css" rel="stylesheet" />
+        <script src="https://unpkg.com/@popperjs/core@2"></script>
+        <link rel="stylesheet" href="/assets/css/button.css" rel="stylesheet">
+        <script src="/socket.io/socket.io.js"></script>
+    </head>
+
+    <body class="m-0 font-sans text-base antialiased font-normal leading-default bg-gray-50 text-slate-500">
+        <!-- Loading Screen -->
+        <div id="loader" class="relatave">
+            <div
+                class=" overflow-hidden absolute top-0 left-0 w-100 h-100 inset-0 z-[9999] flex items-center justify-center transition-opacity duration-300 backdrop-blur-md">
+            </div>
+            <div
+                class=" absolute top-1/2 left-1/2 w-12 h-12 border-4 border-blue-500 z-[9999] border-t-transparent rounded-full animate-spin">
+            </div>
+        </div>
+        <% if (!authCheck) { %>
+            <%- include("../templates/sideBar.ejs") %>
+                <% } %>
+
+                    <% if (!authCheck) { %>
+                        <main
+                            class="ease-soft-in-out xl:ml-68.5 relative h-full max-h-screen rounded-xl transition-all duration-200">
+                            <% } %>
+
+                                <% if (!authCheck) { %>
+                                    <%- include("../templates/header.ejs") %>
+                                        <% } %>
+
+                                            <%- body %>
+
+                                                <% if (!authCheck) { %>
+                                                    <%- include("../templates/footer.ejs") %>
+                                                        <% } %>
+
+                                                            <% if (!authCheck) { %>
+                        </main>
+                        <% } %>
+
+                            <!-- Plugins & Scripts -->
+                            <script src="/assets/js/plugins/chartjs.min.js" async></script>
+                            <script src="/assets/js/sidenav-burger.js" async></script>
+                            <script async defer src="https://buttons.github.io/buttons.js"></script>
+                            <script src="/assets/js/soft-ui-dashboard-tailwind.js?v=1.0.5" async></script>
+                            <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+                            <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"
+                                type="module"></script>
+                            <script src="/assets/js/sidebar/sidebar.js" async></script>
+                            <script>
+                                const showLoader = () => {
+                                    const loader = document.getElementById('loader');
+                                    if (loader) {
+                                        loader.classList.remove('hidden');
+                                        loader.style.opacity = '1';
+                                    }
+                                };
+                                function hideLoader() {
+                                    const loader = document.getElementById('loader');
+                                    if (loader) {
+                                      loader.style.opacity = '0';
+                                      setTimeout(() => loader.remove(), 300);
+                                    }
+                                  }
+
+                                // Hide loader after page loads
+                                window.addEventListener('load', hideLoader);
+                                window.addEventListener('pageshow', hideLoader); 
+
+                                // Show loader when link is clicked
+                                document.addEventListener('DOMContentLoaded', () => {
+                                    document.querySelectorAll('a[href]').forEach(link => {
+                                        link.addEventListener('click', (e) => {
+                                            const href = link.getAttribute('href');
+                                            if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
+                                                showLoader();
+                                            }
+                                        });
+                                    });
+
+                                    // Show loader on form submit
+                                    document.querySelectorAll('form').forEach(form => {
+                                        form.addEventListener('submit', () => {
+                                            showLoader();
+                                        });
+                                    });
+
+                                    // Optional: Show loader on button clicks
+                                    document.querySelectorAll('button[type="submit"], .show-loader').forEach(btn => {
+                                        btn.addEventListener('click', () => {
+                                            showLoader();
+                                        });
+                                    });
+                                });
+                            </script>
+
+    </body>
+
+    </html>

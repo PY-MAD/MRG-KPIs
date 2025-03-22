@@ -3,5 +3,6 @@ const orderController = require("../../controller/tanqeebController/orderControl
 
 
 router.get("/:order",orderController.GETordersView);
+router.get("/reload/:order",orderController.reFetchData);
 
 module.exports = router;

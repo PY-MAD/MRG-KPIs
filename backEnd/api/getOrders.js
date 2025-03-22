@@ -3,7 +3,7 @@ const fs = require("fs");
 const express = require("express");
 // socket
 const { io } = require("../app");
-
+const candidateModel = require("../models/candidateModel")
 
 const LOGIN_URL = "https://saudi.tanqeeb.com/ar/employers/login";
 const COOKIES_FILE_PATH = "api/data/cookies.json";
@@ -146,7 +146,6 @@ async function scrapeApplicants(APPLICANTS_URL, email, password) {
 
       applicantsData.push(...batchResults.filter(Boolean));
     }
-
     const filePath = `applicants_${Date.now()}.json`;
     fs.writeFileSync("api/data/"+filePath, JSON.stringify(applicantsData, null, 2), "utf-8");
 

@@ -1,7 +1,9 @@
 const applicationsModel = require("../../models/ApplicationModel");
-const path = require("path");
+const candidateModel = require("../../models/candidateModel");
+const ApplicationModel = require("../../models/ApplicationModel");
+const { deleteFile, isExistFile } = require("../../services/apiFileServices");
+const scrapeApplicants = require("../../api/getOrders");
 const fs = require("fs");
-const candidateModel = require("../../models/candidateModel")
 /**
  * GET orders
  */
@@ -17,8 +19,13 @@ module.exports.GETordersView = async (req, res) => {
         const findInCandidateMdoel = await candidateModel.find({
             applicationId:findApplication._id
         });
-        console.log(findInCandidateMdoel);
         if(!findInCandidateMdoel.length){
+            await AddInDatabase(findApplication,order);
+        }
+        if(findInCandidateMdoel.length != findApplication.countOfApplications){
+            await candidateModel.deleteMany({
+                applicationId:findApplication._id
+            })
             await AddInDatabase(findApplication,order);
         }
         return res.render("tanqeeb/order/listOrder",
@@ -38,16 +45,16 @@ module.exports.GETordersView = async (req, res) => {
 
 async function AddInDatabase(findApplication,order){
     
-    const setValuePath = path.join(__dirname, "../api/data", findApplication.path);
+    const checkFile = isExistFile(findApplication.path);
 
     // ✅ Check if the file exists
-    if (!fs.existsSync(setValuePath)) {
-        console.error("❌ File not found:", setValuePath);
+    if (checkFile.status == 404) {
+        console.error("❌ File not found:", checkFile.data);
         req.flash("error", "File not found, please check the application data.");
         return res.redirect("/tanqeeb/JobsAds");
     }
 
-    const readFile = fs.readFileSync(setValuePath, "utf8");
+    const readFile = fs.readFileSync(checkFile.data, "utf8");
 
     // ✅ Check if `data` is an object (not an array)
     if (Array.isArray(readFile)) {
@@ -58,7 +65,6 @@ async function AddInDatabase(findApplication,order){
     // ✅ Pass a valid template name and data
     const data = JSON.parse(readFile)
     for(let item in data){
-        console.log(data[item].الاسم)
         await candidateModel.create({
             applicationId:order,
             name:data[item].الاسم ,
@@ -82,3 +88,30 @@ async function AddInDatabase(findApplication,order){
     }
 
 }
+
+
+module.exports.reFetchData = async(req,res)=>{
+    try {
+        const {order} = req.params;
+        const {email,password,url,path,name} = await ApplicationModel.findById(order);
+        console.log(email,password,url,path);
+        const isDeleteFiled = deleteFile(path);
+        if(isDeleteFiled.status == 404){
+            return isDeleteFiled.data;
+        }
+        const fileName = await scrapeApplicants(url,email,password);
+        if (!fileName) {
+            req.flash("error", "Failed to extract job data.");
+            return res.redirect("/tanqeeb/Orders");
+        }
+        await ApplicationModel.findByIdAndUpdate(order,{
+            path:fileName.file,
+            countOfApplications:fileName.count
+        })
+        req.flash("success", "updated files was success : "+ name);
+        res.redirect("/tanqeeb/orders");
+    } catch (error) {
+        console.error(error);
+    }
+}
+

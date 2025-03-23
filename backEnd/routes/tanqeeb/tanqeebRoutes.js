@@ -8,7 +8,6 @@ router.get("/JobsAds",isAuth,mainController.JobsAds)
 router.get("/Orders",isAuth,mainController.orders)
 router.get("/Target",isAuth,mainController.target)
 
-
 router.use("/Orders",isAuth,orderRouter)
 router.use("/JobsAds",isAuth,jobsAdsRouter)
 module.exports = router;

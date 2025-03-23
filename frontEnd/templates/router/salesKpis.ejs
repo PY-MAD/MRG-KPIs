@@ -1,0 +1,15 @@
+<% let sideBarItem="../../views/components/sideBarItem.ejs" %>
+<li class="w-full mt-4">
+    <h6 class="pl-6 ml-2 text-xs font-bold leading-tight uppercase opacity-60">
+        Sales KPI
+    </h6>
+</li>
+<%- include(sideBarItem,{ link:"/salesKPIs/dashboard", icon:"<span class='material-symbols-outlined'>team_dashboard</span>",
+    title:"Sales KPIs Dashboard",
+    activePath:activePage
+    })
+    %>
+    <%- include(sideBarItem,{ link:"/salesKPIs/target", icon:"<span class='material-symbols-outlined'>Assignment</span>",
+        title:"Sales KPIs Target",
+        activePath:activePage
+        }) %>

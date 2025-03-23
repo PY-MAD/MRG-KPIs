@@ -1,7 +1,7 @@
 <tbody>
     <tr class="border-b border-gray-300">
         <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">
-            <a href="<%- application.url %>" class="text-blue-600 border-b">
+            <a href="/tanqeeb/Orders/<%- application._id %>" class="text-blue-600 border-b">
                 <%- application.name %>
             </a>
         </th>
@@ -18,7 +18,10 @@
                 class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow">
                 <ul class="py-1 text-sm text-gray-700" aria-labelledby="<%- application._id %>-dropdown-button">
                     <li>
-                        <a href="/tanqeeb/JobsAds/update/:id" class="block py-2 px-4 hover:bg-gray-100">Update</a>
+                        <a href="<%- application.url %>" class="block py-2 px-4 hover:bg-gray-100">Go to application</a>
+                    </li>
+                    <li>
+                        <a href="/tanqeeb/JobsAds/update/<%- application._id %>" class="block py-2 px-4 hover:bg-gray-100">Update</a>
                     </li>
                     <li>
                         <!-- change it to post please :) -->

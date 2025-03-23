@@ -145,7 +145,6 @@ module.exports.senderValidationEmail = async (req, res, email, code, token, name
 
         // Send email
         await transporter.sendMail(mailOptions);
-        console.log("Email sent successfully to:", email);
         res.redirect(`/auth/validationEmail/${token}`);
     } catch (error) {
         console.error("Error sending email:", error);
@@ -177,14 +176,12 @@ module.exports.GETValidateUser = async (req, res) => {
 module.exports.POSTValidateUser = async (req, res) => {
     const { token } = req.params;
     const { index1, index2, index3, index4, index5, index6 } = req.body;
-    console.log(req.params);
+
     const userCode = index1 + index2 + index3 + index4 + index5 + index6;
     try {
         const findToken = await validateModel.findOne({
             validateToken: token
         })
-        console.log(findToken.validateCode)
-        console.log(userCode)
         if (findToken.validateCode != userCode) {
             req.flash("error", "the code is wrong !")
             return res.redirect("/auth/validationEmail/" + token)
@@ -192,7 +189,7 @@ module.exports.POSTValidateUser = async (req, res) => {
         const findUser = await usersModel.findByIdAndUpdate(findToken.userId, {
             isValidated: true
         });
-        await validateModel.findByIdAndDelete(findToken.id);
+        await validateModel.findByIdAndDelete(findToken._id);
         findUser.save();
         req.flash("success", "your account has been validated !");
         res.redirect("/auth/login");

@@ -6,5 +6,7 @@ router.get("/addNewApplication",isAuth,JobsAdsController.GETAddJobsAdsPage);
 router.post("/addNewApplication",isAuth,JobsAdsController.POSTAddJobsAdsPage);
 //delete applicationJob
 router.delete("/delete/:id",JobsAdsController.DeleteJobsAds);
+
+// fetching data for dashboard
 router.get("/fetchApplications",JobsAdsController.getData);
 module.exports = router;

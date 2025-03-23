@@ -21,13 +21,13 @@ module.exports.POSTAddJobsAdsPage = async(req,res)=>{
     const {floating_name,floating_email,floating_password,floating_url} = req.body;
     if(!floating_name || !floating_email || !floating_password || !floating_url){
         req.flash("please fill all the inputs !");
-        return res.redirect("/JobsAds/addNewApplication");
+        return res.redirect("/tanqeeb/JobsAds/addNewApplication");
     }
 
     const fileName = await scrapeApplicants(floating_url,floating_email,floating_password)
     if (!fileName) {
         req.flash("error", "Failed to extract job data.");
-        return res.redirect("/JobsAds/addNewApplication");
+        return res.redirect("/tanqeeb/JobsAds/addNewApplication");
     }
     await ApplicationModel.create({
         name:floating_name,
@@ -37,7 +37,7 @@ module.exports.POSTAddJobsAdsPage = async(req,res)=>{
         path:fileName.file,
         countOfApplications:fileName.count
     })
-    res.redirect("/JobsAds")
+    res.redirect("/tanqeeb/JobsAds")
 }
 
 /**
@@ -46,7 +46,6 @@ module.exports.POSTAddJobsAdsPage = async(req,res)=>{
 
 module.exports.DeleteJobsAds = async (req, res) => {
     const { id } = req.params;
-    console.log("Deleting Job ID:", id);
 
     try {
         const findTheJobs = await ApplicationModel.findById(id);
@@ -71,7 +70,7 @@ module.exports.DeleteJobsAds = async (req, res) => {
         await ApplicationModel.findByIdAndDelete(id);
         console.log("✅ Job deleted successfully!");
 
-        res.redirect("/JobsAds"); // Redirect back to JobsAds page
+        res.redirect("tanqeeb/JobsAds"); // Redirect back to JobsAds page
     } catch (error) {
         console.error("❌ Error deleting job:", error);
         res.status(500).json({ message: "Internal server error!" });

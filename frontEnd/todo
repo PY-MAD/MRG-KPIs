@@ -1,0 +1,37 @@
+/**
+ * TODO:
+ * create : sales KPIs
+ * TODO: target sales GENERAL - monthly - 25 degree
+ * TODO: target sales - الدرجة المعيارية - 15 degree
+ * TODO: Net profit = total revenue - (cost of goods sold + operating expenses + other expenses). - 25 degree
+ * TODO: الالتزام بنسبة المرتجع : 5 degree
+ * TODO: الالتزام بنسبة التكاليف المعيارية - 15 degree
+ * TODO: تقارير مخالفات الجودة  :5 degree
+ * TODO: تقارير مخالفات الهايجين  :5 degree
+ * TODO: تقارير مخالفات التدريب  : 5 degree
+ * 
+ * !: MIN SALES : 87%
+ * !: net profit : 85%
+ * !: GET after 3 month give the report
+ */
+
+
+/**
+ * TODO:
+ * create : operation KPIs
+ * TODO: target sales GENERAL - monthly - 20 degree
+ * TODO: Net profit = total revenue - (cost of goods sold + operating expenses + other expenses). - 20 degree
+ * TODO: الالتزام بنسبة المرتجع : 5 degree
+ * TODO: الالتزام بنسبة التكاليف المعيارية - 10 degree
+ * TODO: تقارير مخالفات التدريب  : 5 degree
+ * TODO: معدل دوران العماله - للسعودين : 8% - 5 degree
+ * TODO: معدل دوران العماله - الغير سعوديين : 25% - 5 degree
+ * TODO: new branch - 10 degree
+ * TODO: opening new branch on time - 10 degree
+ * TODO: training emp - 5 degree
+ * TODO: مشاكل العملاء مع المنتجات بحد اقصى 5 (MARKETING) - 5 degree
+ * TODO: مشاكل العملاء مع الموظفين بحد اقصى لكل 10 موظفين مشكلة واحدة (MARKETING) -  5 degree
+ * !: MIN SALES : 87%
+ * !: net profit : 85%
+ * !: GET after 3 month give the report
+ */

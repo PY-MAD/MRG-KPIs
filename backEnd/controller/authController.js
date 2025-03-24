@@ -48,7 +48,7 @@ module.exports.POSTLogin = async (req, res) => {
             req.flash("error", "your account not validated please check your email");
             return res.redirect("/auth/login");
         }
-        req.session.user = findUser;
+        req.session.user = findUser; // 🔹 تخزين بيانات المستخدم في الجلسة
         req.flash("success", "Login successful!");
         res.redirect("/");
     } catch (error) {
@@ -114,7 +114,7 @@ module.exports.POSTSignUp = async (req, res) => {
  * GET logout page
  */
 module.exports.GETLogout = (req, res) => {
-    req.session.destroy((err) => {
+    req.user.destroy((err) => {
         if (err) {
             console.error(err);
             return res.redirect("/");

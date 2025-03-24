@@ -13,7 +13,7 @@ module.exports.GETAddJobsAdsPage = (req,res)=>{
             title:"add new application",
             layout:"../layout.ejs",
             activePage:"Jobs Ads",
-            user:req.session.user,
+            user:req.user,
         }
     );
 }

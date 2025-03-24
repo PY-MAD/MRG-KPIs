@@ -17,4 +17,6 @@
         "socket.io": "^4.8.1",
         "tailwindcss-transforms": "^2.2.0"
     }
+    ,
+    "type": "module"
 }

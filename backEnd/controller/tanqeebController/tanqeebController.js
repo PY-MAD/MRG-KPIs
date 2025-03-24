@@ -7,7 +7,7 @@ module.exports.dashboard = (async(req, res) => {
             title: "Dashboard",
             layout: "../layout.ejs",
             activePage: "Dashboard",
-            user: req.session.user,
+            user: req.user,
             application:findAllApplecation
         }
     );
@@ -20,7 +20,7 @@ module.exports.JobsAds = async(req, res) => {
                 title: "Jobs Ads",
                 layout: "../layout.ejs",
                 activePage: "Jobs Ads",
-                user: req.session.user,
+                user: req.user,
                 applications:findAllFetches
             }
         );
@@ -35,7 +35,7 @@ module.exports.orders = (async(req, res) => {
             title: "Orders",
             layout: "../layout.ejs",
             activePage: "Orders",
-            user: req.session.user,
+            user: req.user,
             applications:findAllFetches
         }
     );
@@ -46,7 +46,7 @@ module.exports.target = ((req, res) => {
             title: "Target",
             layout: "../layout.ejs",
             activePage: "Target",
-            user: req.session.user
+            user: req.user
         }
     );
 })

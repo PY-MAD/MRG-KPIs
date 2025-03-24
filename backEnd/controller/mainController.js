@@ -6,7 +6,7 @@ module.exports.dashboard = ((req, res) => {
             title: "Dashboard",
             layout: "../layout.ejs",
             activePage: "Dashboard",
-            user: req.session.user,
+            user: req.user,
         }
     );
 })
@@ -16,7 +16,7 @@ module.exports.profile = ((req, res) => {
             title: "Profile",
             layout: "../layout.ejs",
             activePage: "Profile",
-            user: req.session.user,
+            user: req.user,
             message: {
                 error: req.flash("error"),
                 success: req.flash("success")
@@ -32,7 +32,7 @@ module.exports.JobsAds = async(req, res) => {
                 title: "Jobs Ads",
                 layout: "../layout.ejs",
                 activePage: "Jobs Ads",
-                user: req.session.user,
+                user: req.user,
                 applications:findAllFetches
             }
         );
@@ -47,7 +47,7 @@ module.exports.orders = (async(req, res) => {
             title: "Orders",
             layout: "../layout.ejs",
             activePage: "Orders",
-            user: req.session.user,
+            user: req.user,
             applications:findAllFetches,
             message: {
                 error: req.flash("error"),
@@ -62,7 +62,7 @@ module.exports.target = ((req, res) => {
             title: "Admin",
             layout: "../layout.ejs",
             activePage: "Admin",
-            user: req.session.user
+            user: req.user
         }
     );
 })
@@ -72,7 +72,7 @@ module.exports.admin = ((req, res) => {
             title: "Admin",
             layout: "../layout.ejs",
             activePage: "Admin",
-            user: req.session.user
+            user: req.user
         }
     );
 })

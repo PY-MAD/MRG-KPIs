@@ -33,7 +33,7 @@ module.exports.GETordersView = async (req, res) => {
                 title: "order - "+findApplication.name,
                 layout: "../layout.ejs",
                 activePage: "Orders",
-                user: req.session.user,
+                user: req.user,
                 candidate:findInCandidateMdoel
             }
         );

@@ -16,7 +16,7 @@
         <link href="/assets/css/nucleo-svg.css" rel="stylesheet" />
         <link rel="stylesheet"
             href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-
+        <link rel="stylesheet" href="/assets/css/input.css">
         <!-- Styling & Scripts -->
 
         <script src="https://cdn.tailwindcss.com"></script>
@@ -68,8 +68,15 @@
                             <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"
                                 type="module"></script>
                             <script src="/assets/js/sidebar/sidebar.js" async></script>
+                            <script src="/assets/js/loadingScreens/loading.js" async></script>
+                            <script src="/assets/js/darkMood/darkMood.js" async></script>
                             <script>
-
+                                // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+                                if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                                    document.documentElement.classList.add('dark');
+                                } else {
+                                    document.documentElement.classList.remove('dark')
+                                }
                             </script>
 
     </body>

@@ -64,24 +64,22 @@ async function AddInDatabase(findApplication,order){
 
     // ✅ Pass a valid template name and data
     const data = JSON.parse(readFile)
-    for(let item in data){
-        await candidateModel.create({
-            applicationId:order,
-            name:data[item].الاسم ,
-            job_title:data[item].الوظيفة ,
-            age: data[item].العمر,
-            experience:data[item].الخبرة ,
-            nationality:data[item].الجنسية ,
-            city:data[item].المدينة ,
-            phone:data[item].الجوال ,
-            about: data[item].نبذة,
-            minimum_salary:data[item].الحد_الأدنى_للراتب,
-            cv_link:data[item].رابط_السيرة_الذاتية,
-            url: data[item].رابط_الصفحة
-
-        })
-        // await candidateModel.create()
-    }
+        await candidateModel.insertMany(
+            data.map(item => ({
+                applicationId: order,
+                name: item.الاسم,
+                job_title: item.الوظيفة,
+                age: item.العمر,
+                experience: item.الخبرة,
+                nationality: item.الجنسية,
+                city: item.المدينة,
+                phone: item.الجوال,
+                about: item.نبذة,
+                minimum_salary: item.الحد_الأدنى_للراتب,
+                cv_link: item.رابط_السيرة_الذاتية,
+                url: item.رابط_الصفحة
+            }))
+        );
     return {
         status:200,
         msg:"done"

@@ -21,6 +21,10 @@
         <%= candidate.phone %>
     </td>
     <td class="px-6 py-2">
-        <a href="<%= candidate.job_title %>" class="font-medium bg-blue-600 text-white flex flex-col p-3 rounded-3 text-center hover:underline">Download CV</a>
+        <% if( candidate.cv_link != "غير متوفر") {%>
+            <a href="<%= candidate.cv_link %>" class="font-medium bg-blue-600 text-white flex flex-col p-3 rounded-3 text-center hover:underline">Download CV</a>
+        <% }else{ %>
+            يرجى فتح النموذج من خلال الضغط على الاسم
+        <% } %>
     </td>
 </tr>

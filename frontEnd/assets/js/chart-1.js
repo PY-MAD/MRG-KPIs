@@ -1,7 +1,9 @@
 // chart 2
 
+import { url } from "../api/url";
+
 let data = [];
-fetch("http://localhost:5000/tanqeeb/JobsAds/fetchApplications")
+fetch(url+"tanqeeb/JobsAds/fetchApplications")
   .then((item) => {
     item.json()
       .then((item) => {

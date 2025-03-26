@@ -135,7 +135,7 @@ module.exports.senderValidationEmail = async (req, res, email, code, token, name
         const emailHtml = await ejs.renderFile(emailTemplatePath, {
             name: name,
             code: code,
-            activationLink: `http://localhost:5000/auth/validationEmail/${token}`,
+            activationLink: `http://localhost:3000/auth/validationEmail/${token}`,
         });
 
         // Define email options

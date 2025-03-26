@@ -2,7 +2,7 @@ const express = require("express")
 const expressLayouts = require("express-ejs-layouts");
 const app = express();
 const path = require("path");
-var methodOverride = require('method-override')
+const methodOverride = require('method-override')
 require('dotenv').config(".env");
 const session = require("express-session");
 const flash = require("express-flash");
@@ -49,7 +49,7 @@ const db = require("./config/db");
 // Set views and layout
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../frontEnd/views/pages")); // Adjust if needed
-app.use("/assets", express.static(path.join("../frontEnd/assets")));
+app.use("/assets", express.static(path.join(__dirname,"../frontEnd/assets")));
 
 
 
@@ -61,6 +61,6 @@ app.use("/tanqeeb",tanqeeb)
 app.use("/auth",auth)
 
 
-server.listen(process.env.PORT || 3000, () => {
-    console.log("🚀 Server running on http://localhost:"+process.env.PORT || 3000,);
+server.listen(3000 , () => {
+    console.log("🚀 Server running on http://localhost:"+3000);
 });

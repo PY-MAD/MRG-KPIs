@@ -1,6 +1,7 @@
 const ApplicationModel = require("../models/ApplicationModel");
 const usersModel = require("../models/usersModel");
 const departmentModel = require("../models/departmentsModel");
+const termsModel = require("../models/termsModel");
 module.exports.dashboard = ((req, res) => {
     res.render("tanqeeb/dashboard",
         {
@@ -87,6 +88,9 @@ module.exports.admin = async (req, res) => {
                     username: manager ? manager.name : ""
                 };
             });
+            break;
+        case "terms":
+            data = await termsModel.find();
             break;
     }
 

@@ -6,23 +6,30 @@
                     name
                 </th>
                 <th scope="col" class="px-6 py-3">
-                    Admin
+                    weight
                 </th>
                 <th scope="col" class="px-6 py-3">
-                    email
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    block
+                    departments
                 </th>
                 <th scope="col" class="px-6 py-3">Action</th>
             </tr>
         </thead>
         <tbody>
             <% locals?.data.forEach((item)=>{ %>
-                <%- include("./usersTable.ejs",{
+                <%- include("./termsTable.ejs",{
                 data:item
                 }) %>
             <% }) %>
         </tbody>
     </table>
+    <ul id="tableBody" class="w-full">
+        <li class="bg-white border-b border-gray-200" id="lastInput">
+            <div class="text-blue-600 hover:border-b-blue-500 hover:cursor-pointer  p-3" id="addNewInput">
+                add new Departments
+            </div>
+        </li>
+    </ul>
 </div>
+<script src="/assets/api/admin/terms/addNewInput.js" ></script>
+<script src="/assets/api/admin/terms/addRowOfDepartment.js"></script>
+<script src="/assets/api/admin/terms/departmentAPI.js"></script>

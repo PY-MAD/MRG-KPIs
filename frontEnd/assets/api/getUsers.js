@@ -1,5 +1,6 @@
 import { fetchData } from "./fetchCode.js";
-fetchData("http://localhost:5000/salesKPIs/target/users")
+import { url } from "./url.js";
+fetchData(url+"/salesKPIs/target/users")
 .then((users)=>{
     users.forEach(element => {
         addUser(element.email,element.name);

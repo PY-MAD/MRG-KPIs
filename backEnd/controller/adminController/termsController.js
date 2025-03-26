@@ -5,7 +5,7 @@ const {getDepartment} = require("./departmentController");
  */
 module.exports.POSTterms = (req,res)=>{
     try {
-        let 
+        const {name,weight,departmentId} = req.body;
     } catch (error) {
         console.log(error)
     }

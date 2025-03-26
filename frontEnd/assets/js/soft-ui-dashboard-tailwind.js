@@ -15,9 +15,12 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
+
+import { url } from "../api/url";
+
 var page = window.location.pathname.split("/").pop().split(".")[0];
 var aux = window.location.pathname.split("/");
-var to_build = "http://localhost:5000/";
+var to_build = url;
 var root = window.location.pathname.split("/")
 if (!aux.includes("pages")) {
   page = "dashboard";

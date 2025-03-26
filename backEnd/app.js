@@ -50,7 +50,7 @@ const db = require("./config/db");
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "./frontEnd/views/pages")); // Adjust if needed
 app.use("/assets", express.static(path.join(__dirname,"./frontEnd/assets")));
-
+app.use("/socket.io", express.static(path.join(__dirname, "node_modules/socket.io/client-dist")));
 
 
 const mainRoutes = require("./routes/mainRoutes");
@@ -61,6 +61,6 @@ app.use("/tanqeeb",tanqeeb)
 app.use("/auth",auth)
 
 
-app.listen(process.env.PORT || 3000, () => {
+Server.listen(process.env.PORT || 3000, () => {
     console.log("Server running on port", process.env.PORT || 3000);
 });

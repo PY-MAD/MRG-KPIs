@@ -1,6 +1,6 @@
 // chart 2
 
-import { url } from "../api/url";
+
 
 let data = [];
 fetch(url+"tanqeeb/JobsAds/fetchApplications")

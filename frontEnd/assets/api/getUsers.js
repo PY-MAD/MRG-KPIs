@@ -1,5 +1,5 @@
 import { fetchData } from "./fetchCode.js";
-import { url } from "./url.js";
+
 fetchData(url+"/salesKPIs/target/users")
 .then((users)=>{
     users.forEach(element => {

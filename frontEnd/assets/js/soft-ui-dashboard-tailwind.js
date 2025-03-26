@@ -16,7 +16,7 @@
 
 */
 
-import { url } from "../api/url";
+
 
 var page = window.location.pathname.split("/").pop().split(".")[0];
 var aux = window.location.pathname.split("/");

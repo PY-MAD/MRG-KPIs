@@ -48,8 +48,8 @@ app.use(express.json())
 const db = require("./config/db");
 // Set views and layout
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "../frontEnd/views/pages")); // Adjust if needed
-app.use("/assets", express.static(path.join(__dirname,"../frontEnd/assets")));
+app.set("views", path.join(__dirname, "./frontEnd/views/pages")); // Adjust if needed
+app.use("/assets", express.static(path.join(__dirname,"./frontEnd/assets")));
 
 
 

@@ -50,7 +50,8 @@ async function scrapeApplicants(APPLICANTS_URL, email, password) {
   const startTime = Date.now(); // ✅ تسجيل وقت البداية
   io.emit("serverConnection",true)
   const browser = await puppeteer.launch({
-    headless: false
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
 
   const page = await browser.newPage();

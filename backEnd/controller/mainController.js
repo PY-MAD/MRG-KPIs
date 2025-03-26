@@ -1,5 +1,6 @@
 const ApplicationModel = require("../models/ApplicationModel");
-
+const usersModel = require("../models/usersModel");
+const departmentModel = require("../models/departmentsModel");
 module.exports.dashboard = ((req, res) => {
     res.render("tanqeeb/dashboard",
         {
@@ -59,20 +60,42 @@ module.exports.orders = (async(req, res) => {
 module.exports.target = ((req, res) => {
     res.render("tanqeeb/target",
         {
-            title: "Admin",
+            title: "target",
             layout: "../layout.ejs",
-            activePage: "Admin",
-            user: req.user
+            activePage: "target",
+            user: req.user,
         }
     );
 })
-module.exports.admin = ((req, res) => {
-    res.render("admin",
-        {
-            title: "Admin",
-            layout: "../layout.ejs",
-            activePage: "Admin",
-            user: req.user
-        }
-    );
-})
+module.exports.admin = async (req, res) => {
+    const activeTab = req.query.tab || 'users';
+    const findDepartment = await departmentModel.find();
+    const findUser = await usersModel.find();
+
+    let data;
+
+    switch (activeTab) {
+        case "users":
+            data = findUser;
+            break;
+
+        case "departments":
+            data = findDepartment.map((item) => {
+                const manager = findUser.find(user => user._id.toString() === item.mangerDepartment?.toString());
+                return {
+                    ...item.toObject(),
+                    username: manager ? manager.name : ""
+                };
+            });
+            break;
+    }
+
+    res.render("admin", {
+        title: "Admin",
+        layout: "../layout.ejs",
+        activePage: "Admin",
+        user: req.user,
+        isActive: activeTab,
+        data: data
+    });
+};

@@ -23,7 +23,16 @@ const userSchema = new mongoose.Schema({
         default:false,
         require:true,
     },
-    
+    isAdmin:{
+        type:Boolean,
+        default:false,
+        require:true
+    },
+    isBlocked:{
+        type:Boolean,
+        default:false,
+        require:true
+    }
 })
 
 module.exports = mongoose.model("users",userSchema);

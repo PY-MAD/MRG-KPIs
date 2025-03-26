@@ -42,6 +42,7 @@ app.use(flash());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(expressLayouts);
+app.use(express.json())
 
 
 const db = require("./config/db");
@@ -60,6 +61,6 @@ app.use("/tanqeeb",tanqeeb)
 app.use("/auth",auth)
 
 
-server.listen(3000, () => {
-    console.log("🚀 Server running on http://localhost:3000");
+server.listen(process.env.PORT || 3000, () => {
+    console.log("🚀 Server running on http://localhost:"+process.env.PORT || 3000,);
 });

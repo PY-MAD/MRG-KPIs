@@ -4,19 +4,19 @@
     type="button"
     id="toggleModule"
     >
-    Toggle modal
+    Add New Quarter
 </button>
 
 <!-- Main modal -->
 <div id="default-modal" tabindex="-1" aria-hidden="true"
-    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-[666] justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-990 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-2xl max-h-full">
         <!-- Modal content -->
         <div class="relative bg-white rounded-lg shadow-sm ">
             <!-- Modal header -->
             <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t  border-gray-200">
                 <h3 class="text-xl font-semibold text-gray-900 ">
-                    add new year
+                    Add New Quarter
                 </h3>
                 <button type="button"
                     class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center :hover:bg-gray-600 :hover:text-white"
@@ -49,13 +49,13 @@
                     <div class="mb-6">
                         <div class="relative">
                             <label for="startDate" class="block mb-2 text-sm font-medium text-gray-900">Start date</label>
-                            <input type="date" id="startDate" class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 mb-4">
+                            <input type="date" name="startDate" id="startDate" class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 mb-4">
                         </div>
                     </div>
                     <div class="mb-6">
                         <div class="relative">
                             <label for="endDate" class="block mb-2 text-sm font-medium text-gray-900">End date</label>
-                            <input type="date" id="endDate" readonly class="w-full px-4 py-2 border rounded-xl bg-gray-200 mb-4">
+                            <input type="date" name="endDate" id="endDate" readonly class="w-full px-4 py-2 border rounded-xl bg-gray-200 mb-4">
                         </div>
                     </div>
                 </div>
@@ -86,7 +86,7 @@
         setTimeout(()=>{
             let bgDark = document.querySelector("div.fixed.inset-0.z-40");
             bgDark.classList.remove("z-40");
-            bgDark.classList.add("z-990");
+            bgDark.classList.add("z-110");
         },100)
     })
 </script>

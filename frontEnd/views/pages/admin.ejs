@@ -1,0 +1,38 @@
+<div class="md:flex">
+    <ul class="flex-column space-y space-y-4 text-sm font-medium text-gray-500 md:me-4 mb-4 md:mb-0">
+        <%- include("./admin/sideItem.ejs",{
+            href:"?tab=users",
+            name:"💁 users",
+            isActive: locals.isActive == "users"
+        })%>
+        <%- include("./admin/sideItem.ejs",{
+            href:"?tab=departments",
+            name:"🏢 Departments",
+            isActive: locals.isActive == "departments"
+        })%>
+        <%- include("./admin/sideItem.ejs",{
+            href:"?tab=terms",
+            name:"📝 Terms",
+            isActive: locals.isActive == "terms"
+        })%>
+        <%- include("./admin/sideItem.ejs",{
+            href:"?tab=quarters",
+            name:"📊 Quarters",
+            isActive: locals.isActive == "quarters"
+        })%>
+        <%- include("./admin/sideItem.ejs",{
+            href:"?tab=logs",
+            name:"📂 Logs",
+            isActive: locals.isActive == "logs"
+        })%>
+    </ul>
+
+    <!-- هنا نعرض المحتوى حسب التبويب -->
+    <div class="mx-32 bg-gray-50 text-medium text-gray-600 rounded-lg w-full">
+        <%
+            let name = locals?.isActive;%>
+            <%- include(`./admin/${name}/${name}View.ejs`) %>
+        
+    </div>
+    
+</div>

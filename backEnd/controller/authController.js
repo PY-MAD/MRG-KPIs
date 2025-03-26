@@ -48,8 +48,7 @@ module.exports.POSTLogin = async (req, res) => {
             req.flash("error", "your account not validated please check your email");
             return res.redirect("/auth/login");
         }
-        req.session.user = findUser; // 🔹 تخزين بيانات المستخدم في الجلسة
-        req.flash("success", "Login successful!");
+        req.session.user = findUser;
         res.redirect("/");
     } catch (error) {
         throw error;
@@ -90,7 +89,9 @@ module.exports.POSTSignUp = async (req, res) => {
             email: email,
             password: cryptedPassword,
             validateCode: code,
-            validateToken: token
+            validateToken: token,
+            isAdmin:false,
+            isBlocked:false
         })
         const newValidateUser = await validateModel.create({
             userId: newUser.id,
@@ -114,12 +115,14 @@ module.exports.POSTSignUp = async (req, res) => {
  * GET logout page
  */
 module.exports.GETLogout = (req, res) => {
-    req.user.destroy((err) => {
+    req.session.destroy((err) => {
         if (err) {
             console.error(err);
             return res.redirect("/");
         }
+
     })
+    req.user = "";
     res.redirect("/auth/login");
 }
 
@@ -132,7 +135,7 @@ module.exports.senderValidationEmail = async (req, res, email, code, token, name
         const emailHtml = await ejs.renderFile(emailTemplatePath, {
             name: name,
             code: code,
-            activationLink: `http://localhost:3000/auth/validationEmail/${token}`,
+            activationLink: `http://localhost:5000/auth/validationEmail/${token}`,
         });
 
         // Define email options

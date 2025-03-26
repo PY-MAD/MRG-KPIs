@@ -1,7 +1,7 @@
 // chart 2
 
 let data = [];
-fetch("http://localhost:3000/tanqeeb/JobsAds/fetchApplications")
+fetch("http://localhost:5000/tanqeeb/JobsAds/fetchApplications")
   .then((item) => {
     item.json()
       .then((item) => {

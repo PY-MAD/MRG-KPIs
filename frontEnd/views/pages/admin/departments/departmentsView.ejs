@@ -1,0 +1,120 @@
+<div class="relative overflow-x-auto">
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+            <tr class="">
+                <th scope="col" class="px-8 py-3">
+                    name
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    manager of Departments
+                </th>
+                <th scope="col" class="px-6 py-3">Action</th>
+            </tr>
+        </thead>
+        <tbody id="departmentTable">
+        <% if(locals?.data){ %>
+            <% data.forEach((item)=>{ %>
+                <%- include("./departmenTable.ejs",{data:item})%>
+            <% }) %>
+        <% } %>
+        </tbody>
+    </table>
+    <ul id="tableBody" class="w-full">
+        <li class="bg-white border-b border-gray-200" id="lastInput">
+            <div class="text-blue-600 hover:border-b-blue-500 hover:cursor-pointer  p-3" id="addNewInput">
+                add new Departments
+            </div>
+        </li>
+    </ul>
+</div>
+
+<script>
+    const addNewInput = async () => {
+        let tableBody = document.getElementById("tableBody");
+        const newInput = `
+                    <form action="/Admin/addDepartments" onsubmit="handleForm(event)" class="w-full text-sm text-left rtl:text-right text-gray-500 bg-white border-b border-gray-200 flex flex-row w-full" method="post">
+                                    <input type="text" name="departmentName"
+                                        class="border border-gray-300 text-black rounded w-full px-2 py-2 focus:border-fuchsia-300 w-1/2"
+                                        placeholder="Name of department">
+
+                                    <select name="departmentManager" id="departmentManager" class="w-full border border-gray-300 text-black rounded w-full px-2 py-2 focus:border-blue-400">
+                                        <option disabled selected hidden>Select manager</option>
+                                    </select>
+
+                                   <button type="submit" class="bg-blue-500 text-white px-4 py-2 px rounded hover:bg-blue-600">
+                                        Save
+                                    </button>
+
+                    </form>
+        `;
+        tableBody.insertAdjacentHTML("beforebegin", newInput);
+        let selectMangerId = document.querySelectorAll("#departmentManager")
+        fetch("/admin/users").then((res) => {
+            res.json()
+                .then((users) => {
+                    users.forEach((user) => {
+                        selectMangerId[selectMangerId.length - 1].innerHTML += `<option value="${user._id}">${user.name}</option>`
+                    })
+                })
+        }).catch((error) => {
+            console.log(error);
+        })
+
+    }
+    let clickInput = document.getElementById("addNewInput");
+    clickInput.addEventListener("click", addNewInput);
+    function addNewDepartmentInTable(data){
+        let tableBody = document.getElementById("departmentTable");
+        let tableRow = `
+            <tr class="bg-white border-b border-gray-200">
+                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                         ${data.name}
+                    </th>
+                    <td class="px-6 py-4">
+                        ${data.mangerName}
+                    </td>
+                    <td class="px-6 py-4 flex">
+                        <a href="/Admin/changeDepartment/${data._id}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-250 font-medium" type="submit">
+                            <span class='material-symbols-outlined'>edit</span>
+                        </a>
+                        <form action="/Admin/deleteDepartment/${data._id}?_method=DELETE" method="POST">
+                            <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-250 font-medium" type="submit">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </form>
+                    </td>
+            </tr>
+        `
+        return tableBody.innerHTML += tableRow
+    }
+    function handleForm(event){
+        event.preventDefault();
+        const departmentName = event.target.children[0];
+        const departmentManager = event.target.children[1];
+        if(!departmentName.value || !departmentManager.value){
+            !departmentName.value ? departmentName.classList.add("border-red-600"):"";
+            departmentManager.value == "Select manager" ? departmentManager.classList.add("border-red-600"):"";
+        }else{
+            let name = departmentName.value;
+            let manger = departmentManager.value
+            fetch("http://localhost:5000/Admin/addDepartments",{
+                method:"POST",
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                },
+                body:JSON.stringify({
+                    departmentName:name,
+                    departmentManager:manger
+                })
+            }).then(async(response)=>{
+                const res = await response.json();
+                if(res.status == 400){
+                    alert("error");
+                }else{
+                    console.log(res);
+                    addNewDepartmentInTable(res.message)
+                }
+            })
+        }
+    }
+</script>

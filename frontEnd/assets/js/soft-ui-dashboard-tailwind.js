@@ -17,7 +17,7 @@
 */
 var page = window.location.pathname.split("/").pop().split(".")[0];
 var aux = window.location.pathname.split("/");
-var to_build = "http://localhost:3000/";
+var to_build = "http://localhost:5000/";
 var root = window.location.pathname.split("/")
 if (!aux.includes("pages")) {
   page = "dashboard";

@@ -1,6 +1,12 @@
 module.exports.isAuth = (req,res,next)=>{
-    if (req.session.user) {
-        req.user = req.session.user; // 🔹 تعيين المستخدم في `req.user`
+    const { user } = req.session;
+    if (user) {
+        if(user.isBlocked == true){
+            req.flash("error","sorry , your account has been blocked");
+            return res.redirect("/auth/login");
+        }
+        req.user = user;
+
         next();
     }else{
         req.flash("error","you must be logged in to access to the page");

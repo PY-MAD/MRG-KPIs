@@ -1,0 +1,28 @@
+<div class="relative overflow-x-auto">
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+            <tr class="">
+                <th scope="col" class="px-6 py-3">
+                    name
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Admin
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    email
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    block
+                </th>
+                <th scope="col" class="px-6 py-3">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% locals?.data.forEach((item)=>{ %>
+                <%- include("./usersTable.ejs",{
+                data:item
+                }) %>
+            <% }) %>
+        </tbody>
+    </table>
+</div>

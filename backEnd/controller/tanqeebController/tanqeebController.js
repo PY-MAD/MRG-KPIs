@@ -15,7 +15,7 @@ module.exports.dashboard = (async(req, res) => {
 module.exports.JobsAds = async(req, res) => {
     try {
         const findAllFetches = await ApplicationModel.find();
-        res.render("tanqeeb/JobsAds",
+        res.render("tanqeeb/jobsAds",
             {
                 title: "Jobs Ads",
                 layout: "../layout.ejs",

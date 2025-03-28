@@ -52,8 +52,9 @@ async function scrapeApplicants(APPLICANTS_URL, email, password) {
   const browser = await puppeteer.launch({
     headless: false,
     args: ['--start-maximized'],
-    defaultViewport: null
-  });
+    defaultViewport: null,
+    executablePath: '/usr/bin/google-chrome-stable'
+});
 
   const page = await browser.newPage();
   await page.setViewport({ width: 1280, height: 720 });

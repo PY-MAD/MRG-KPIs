@@ -38,10 +38,10 @@
                         <select id="quarterId" name="quarterId" class="w-full px-4 py-2 border rounded-xl">
                             <% quarter.forEach(q=> { %>
                                 <option value="<%= q._id %>" data-months='<%= JSON.stringify(q.months) %>'
-                                    data-year="<%= q.year %>">
+                                    data-year="<%= q.year %>" data-department="<%= department._id %>">
                                     <%= q.year %> - <%= q.quarter %>
                                 </option>
-                                <% }) %>
+                            <% }) %>
                         </select>
                     </div>
 
@@ -68,6 +68,27 @@
                         <input type="hidden" name="totalTarget" id="totalTarget" required />
                     </div>
 
+                    <!-- التيرمز -->
+                    <div id="termsPreview" class="hidden">
+                        <label class="block mb-2 text-sm font-medium text-gray-900">Terms for this Department:</label>
+                        <table class="w-full text-sm text-right text-gray-700 border border-gray-300 rounded">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-4 py-2 border">#</th>
+                                    <th class="px-4 py-2 border">Term</th>
+                                    <th class="px-4 py-2 border">Weight (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="termsList"></tbody>
+                            <tfoot>
+                                <tr class="bg-gray-50 font-semibold">
+                                    <td colspan="2" class="px-4 py-2 border text-left">Total</td>
+                                    <td class="px-4 py-2 border text-gray-900" id="totalWeight">0%</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
                 </div>
 
                 <!-- زر الإرسال -->
@@ -92,43 +113,74 @@
     const totalTarget = document.getElementById("totalTarget");
 
     const monthMap = {
-        "January": 0,
-        "February": 1,
-        "March": 2,
-        "April": 3,
-        "May": 4,
-        "June": 5,
-        "July": 6,
-        "August": 7,
-        "September": 8,
-        "October": 9,
-        "November": 10,
-        "December": 11
-      };
+        "January": 0, "February": 1, "March": 2,
+        "April": 3, "May": 4, "June": 5,
+        "July": 6, "August": 7, "September": 8,
+        "October": 9, "November": 10, "December": 11
+    };
 
-    // توليد تواريخ بناء على الربع المختار
-    quarterSelect.addEventListener("change", () => {
+    quarterSelect.addEventListener("change", async () => {
         const selected = quarterSelect.options[quarterSelect.selectedIndex];
         const months = JSON.parse(selected.getAttribute("data-months"));
         const year = parseInt(selected.getAttribute("data-year"));
-    
+        const depId = selected.getAttribute("data-department");
+
         if (months.length === 3) {
-            const startMonthIndex = monthMap[months[0]];
-            const endMonthIndex = monthMap[months[2]];
-    
-            // التحقق إن كل شيء مضبوط
-            if (startMonthIndex === undefined || endMonthIndex === undefined) return;
-            const start = new Date(year,startMonthIndex,2);
-            const end = new Date(year,endMonthIndex + 1)
-    
-            // safety check
-            if (isNaN(start.getTime()) || isNaN(end.getTime())) return;
-            startDateInput.value = start.toISOString().split("T")[0];
-            endDateInput.value = end.toISOString().split("T")[0];
+            const start = new Date(year, monthMap[months[0]], 2);
+            const end = new Date(year, monthMap[months[2]] + 1);
+
+            if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+                startDateInput.value = start.toISOString().split("T")[0];
+                endDateInput.value = end.toISOString().split("T")[0];
+            }
+        }
+
+        if (depId) {
+            const res = await fetch(`/salesKPIs/terms/by-department/${depId}`);
+            const terms = await res.json();
+
+            const preview = document.getElementById("termsPreview");
+            const termsList = document.getElementById("termsList");
+            const totalWeightCell = document.getElementById("totalWeight");
+            termsList.innerHTML = "";
+            let totalWeight = 0;
+
+            if (terms.length) {
+                const distributedWeight = Math.round((100 / terms.length) * 10) / 10;
+
+                document.getElementById("termsData")?.remove();
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "termsData";
+                input.id = "termsData";
+                input.value = JSON.stringify(
+                    terms.map((term, index) => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td class="px-4 py-2 border text-center">${index + 1}</td>
+                            <td class="px-4 py-2 border">${term.name}</td>
+                            <td class="px-4 py-2 border text-center">${distributedWeight}%</td>
+                        `;
+                        termsList.appendChild(row);
+                        totalWeight += distributedWeight;
+                        return {
+                            term: term._id,
+                            weight: distributedWeight,
+                            target: 0,
+                            achieved: 0,
+                            result: 0
+                        };
+                    })
+                );
+                totalWeightCell.textContent = `${totalWeight}%`;
+                document.querySelector("form").appendChild(input);
+                preview.classList.remove("hidden");
+            } else {
+                preview.classList.add("hidden");
+            }
         }
     });
 
-    // تنسيق الرقم وإزالة الفواصل
     function formatNumber(num) {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
@@ -151,7 +203,6 @@
         }
     });
 
-    // تعديل طبقة الخلفية عند فتح المودال
     const toggleButton = document.getElementById("toggleModule");
     toggleButton.addEventListener("click", () => {
         setTimeout(() => {
@@ -163,7 +214,6 @@
         }, 100);
     });
 
-    // تشغيل الحدث مباشرة عند تحميل الصفحة
     window.addEventListener("DOMContentLoaded", () => {
         quarterSelect.dispatchEvent(new Event("change"));
     });

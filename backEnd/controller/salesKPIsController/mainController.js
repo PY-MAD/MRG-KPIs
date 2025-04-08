@@ -1,32 +1,30 @@
 const departmentsModel = require("../../models/departmentsModel");
 const quarterModel = require("../../models/quartersModel");
 const targetModel = require("../../models/targetModel");
+const { calculateTermResults, calculateQuarterPerformance } = require("../../helpers/kpi.utils");
+
 /**
  * GET Dashboard Sales KPIs
  */
 
 module.exports.GETdashboardView = async (req, res) => {
   try {
-    const kpis = await targetModel.find().populate("quarter").lean();
+    const kpis = await targetModel.find().populate(["quarter", "months.terms.term"]).lean();
 
     const months = [];
     const quarters = [];
-
-    kpis.forEach((kpi) => {
-      const totalAchieved = kpi.months.reduce((sum, m) => sum + (m.achieved || 0), 0);
-      const progress = kpi.salesTarget > 0 ? Math.round((totalAchieved / kpi.salesTarget) * 100) : 0;
-
+  
+    kpis.forEach(kpi => {
+      const enrichedMonths = calculateTermResults(kpi.months || []);
+      const quarterPerformance = calculateQuarterPerformance(enrichedMonths);
+  
       quarters.push({
-        label: kpi.quarter.quarter,           // مثال: "Q1"
-        totalAchieved,                        // كم أنجز فعلاً
-        value: progress                       // النسبة
+        label: `${kpi.quarter.quarter}`,
+        value: quarterPerformance
       });
-
-      kpi.months.forEach((m) => {
-        months.push({
-          label: m.name,
-          value: m.achieved
-        });
+  
+      enrichedMonths.forEach(m => {
+        months.push({ label: m.name, value: m.achieved });
       });
     });
 
@@ -36,7 +34,7 @@ module.exports.GETdashboardView = async (req, res) => {
       activePage: "Sales KPIs Dashboard",
       user: req.user,
       quarters, 
-      months
+      months,
     });
   } catch (err) {
     console.error(err);

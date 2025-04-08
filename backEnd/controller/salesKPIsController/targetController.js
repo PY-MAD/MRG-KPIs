@@ -2,6 +2,7 @@ const usersModel = require("../../models/usersModel");
 const targetModel = require("../../models/targetModel");
 const quarterModel = require("../../models/quartersModel");
 const departmentsModel = require("../../models/departmentsModel");
+const termsModel = require("../../models/termsModel")
 /**
  * GET users 
  */
@@ -21,7 +22,8 @@ module.exports.GETtargetView = async (req, res) => {
             activePage: "Sales KPIs Target",
             user: req.user,
             quarter,
-            targets
+            targets,
+            department
         });
 
     } catch (error) {
@@ -118,3 +120,17 @@ module.exports.PUTKPIs = async(req,res)=>{
         res.status(500).send("حدث خطأ أثناء التحديث");
       }
 }  
+
+
+module.exports.GETTerms = async (req, res) => {
+  try {
+    const terms = await termsModel.find({
+      departmentId: { $in: [req.params.depId] }
+    }).lean();
+
+    res.json(terms);
+  } catch (err) {
+    console.error("Error fetching terms:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};

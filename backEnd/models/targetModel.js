@@ -18,6 +18,13 @@ const monthSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  terms: [{
+    term: { type: mongoose.Schema.Types.ObjectId, ref: "terms" },
+    weight: Number,
+    target: Number,
+    achieved: Number,
+    result: Number // تحسبها تلقائيًا عند العرض
+  }],
   updatedAt: {
     type: Date,
     default: Date.now

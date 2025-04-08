@@ -1,0 +1,20 @@
+<div class="grid grid-cols-5 bg-white text-gray-600 py-3 px-3 border-b hover:bg-slate-400 hover:text-white">
+    <div><%= data.year %></div>
+    <div><%= data.quarter %></div>
+    
+    <div>
+        <form action="/Admin/quarter/update/<%= data._id %>?_method=PUT" method="post">
+            <button type="submit" class="bg-blue-600 text-white px-3 py-2 rounded hover:brightness-50 transition duration-300">
+                <span class="material-symbols-outlined">edit</span>
+            </button>
+        </form>
+    </div>
+    
+    <div>
+        <form action="/Admin/quarter/delete/<%= data._id %>?_method=DELETE" method="post">
+            <button type="submit" class="bg-red-600 text-white px-3 py-2 rounded hover:brightness-50 transition duration-300">
+                <span class="material-symbols-outlined">delete</span>
+            </button>
+        </form>
+    </div>
+</div>

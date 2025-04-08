@@ -1,18 +1,49 @@
-<tr class="bg-white border-b border-gray-200">
-        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-            <%= data.name %>
-        </th>
-        <td class="px-6 py-4">
-            <%- data.username%>
-        </td>
-        <td class="px-6 py-4 flex">
-            <a href="/Admin/changeDepartment/<%-  data._id %>" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-250 font-medium" type="submit">
-                <span class='material-symbols-outlined'>edit</span>
-            </a>
-            <form action="/Admin/deleteDepartment/<%-  data._id %>?_method=DELETE" method="POST">
-                <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-250 font-medium" type="submit">
-                    <span class="material-symbols-outlined">delete</span>
-                </button>
-            </form>
-        </td>
-</tr>
+<% 
+let blockedUser = false;
+let userAdmin = true
+%>
+<div id="container-<%= data._id %>" class="grid grid-cols-5 bg-white text-gray-600 py-3 px-3 border-b hover:bg-slate-400 hover:text-white ">
+    <div><%= data.name %></div>
+    <div><%= data.username %></div>
+    <div>
+        <button data-drawer-placement="right" data-drawer-target="drawer-department-<%= data._id %>" data-drawer-show="drawer-department-<%= data._id %>" aria-controls="drawer-department-<%= data._id %>" type="button" data-id="<%= data._id %>" class= "bg-blue-600 text-white px-3 py-2 rounded hover:brightness-50 transition delay-50 duration-300 ease-in-out">
+          <span class="material-symbols-outlined">
+              edit
+          </span>
+        </button>
+    </div>
+    <div>
+      <form action="/Admin/deleteDepartment/<%= data._id %>?_method=DELETE" method="post">
+        <button type="submit" class= "bg-red-600 text-white px-3 py-2 rounded hover:brightness-50 transition delay-50 duration-300 ease-in-out">
+          <span class="material-symbols-outlined">
+              delete
+          </span>
+        </button>
+      </form>
+    </div>
+</div>
+
+<div id="drawer-department-<%= data._id %>" class="fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto transition-transform translate-x-full bg-white w-80 dark:bg-gray-800" tabindex="-1" aria-labelledby="drawer-right-label">
+  <h5 id="drawer-right-label" class="text-lg font-bold text-gray-700 dark:text-gray-200 mb-4">تعديل القسم</h5>
+  
+  <form action="/Admin/updateDepartment/<%= data._id %>?_method=PUT" method="POST" class="space-y-4">
+    <div>
+      <label for="name" class="block mb-1 text-sm font-medium text-white">اسم القسم</label>
+      <input type="text" name="name" id="name" value="<%= data.name %>" class="w-full p-2 border rounded" required />
+    </div>
+
+    <div>
+      <label for="manager" class="block mb-1 text-sm font-medium text-white">مدير القسم</label>
+      <select name="departmentManger" id="" class="w-full p-2 border rounded">
+        <% allUsers.forEach((item)=>{ %>
+          <option <%- item.name == data.username ? "selected":"" %> value="<%= item._id %>"><%= item.name %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="flex justify-end space-x-2">
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">حفظ</button>
+      <button type="button" data-drawer-hide="drawer-department-<%= data._id %>" class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 transition">إلغاء</button>
+    </div>
+  </form>
+</div>

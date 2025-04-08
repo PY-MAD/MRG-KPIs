@@ -1,24 +1,27 @@
 <div class="relative overflow-x-auto">
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
-            <tr class="">
-                <th scope="col" class="px-8 py-3">
-                    name
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    manager of Departments
-                </th>
-                <th scope="col" class="px-6 py-3">Action</th>
-            </tr>
-        </thead>
-        <tbody id="departmentTable">
+    <% if(message?.success.length != 0){ %>
+        <%- include("alerts/success.ejs",{
+            message:message.success
+        }) %>
+   <%  } %>
+   <% if(message?.error.length != 0){ %>
+    <%- include("alerts/error.ejs",{
+        message:message.error
+    }) %>
+<%  } %>
+    <div class="grid grid-cols-5 bg-gray-100 text-gray-700 uppercase font-semibold py-3 px-3 rounded-t-lg">
+        <div>Name</div>
+        <div>Manger of department</div>
+        <div>update</div>
+        <div>delete</div>
+      </div>
+        <div id="departmentTable">
         <% if(locals?.data){ %>
             <% data.forEach((item)=>{ %>
                 <%- include("./departmenTable.ejs",{data:item})%>
             <% }) %>
         <% } %>
-        </tbody>
-    </table>
+    </div>
     <ul id="tableBody" class="w-full">
         <li class="bg-white border-b border-gray-200" id="lastInput">
             <div class="text-blue-600 hover:border-b-blue-500 hover:cursor-pointer  p-3" id="addNewInput">

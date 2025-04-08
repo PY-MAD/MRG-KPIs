@@ -1,0 +1,46 @@
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg mx-5 mt-10">
+    <table class="w-full text-sm text-right text-gray-700">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+        <tr>
+          <th class="px-6 py-4">الربع / السنة</th>
+          <th class="px-6 py-4">تاريخ البداية</th>
+          <th class="px-6 py-4">تاريخ النهاية</th>
+          <th class="px-6 py-4">المستهدف</th>
+          <th class="px-6 py-4">المحقق الكلي</th>
+          <th class="px-6 py-4">نسبة التحقق</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (locals?.marged) { %>
+          <% marged.forEach((item) => { %>
+            <% item.target.forEach((quarter) => { 
+                const achieved = quarter.months?.reduce((total, m) => total + (m.achieved || 0), 0) || 0;
+                const progress = quarter.salesTarget > 0 ? Math.round((achieved / quarter.salesTarget) * 100) : 0;
+            %>
+              <tr class="bg-white border-b hover:bg-gray-50 transition">
+                <td class="px-6 py-3 font-medium text-blue-600 underline">
+                  <a href="/salesKPIs/<%= quarter._id %>">
+                    <%= item.year %> – <%= item.quarter %>
+                  </a>
+                </td>
+                <td class="px-6 py-3"><%= quarter.startDate %></td>
+                <td class="px-6 py-3"><%= quarter.endDate %></td>
+                <td class="px-6 py-3"><%= quarter.salesTarget?.toLocaleString() || 0 %> ﷼</td>
+                <td class="px-6 py-3 text-blue-700 font-medium"><%= achieved.toLocaleString() %> ﷼</td>
+                <td class="px-6 py-3">
+                  <span class="<%= progress >= 80 ? 'text-green-600' : progress >= 50 ? 'text-yellow-600' : 'text-red-600' %>">
+                    <%= progress %> %
+                  </span>
+                </td>
+              </tr>
+            <% }) %>
+          <% }) %>
+        <% } else { %>
+          <tr>
+            <td colspan="7" class="text-center py-4 text-gray-500">لا توجد بيانات متاحة</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+  

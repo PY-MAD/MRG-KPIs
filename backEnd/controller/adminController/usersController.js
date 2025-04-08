@@ -4,19 +4,33 @@ const usersModel = require("../../models/usersModel");
  * @param {import("express").Request} req 
  * @param {import("express").Response} res 
  */
-module.exports.updateUser = async(req,res)=>{
+module.exports.isBlocked = async(req,res)=>{
     try {
+        
         const {userId} = req.params;
-        const {isAdmin , isBlocked } = req.body;
-        await usersModel.findByIdAndUpdate(userId,{
-            isAdmin:isAdmin != undefined ? true:false,
-            isBlocked:isBlocked != undefined ? true:false,
-        })
+        const {isBlocked} = req.body
+        await usersModel.findByIdAndUpdate(userId, {
+            isBlocked: isBlocked === "false"
+        });
         return res.redirect("/admin?tab=users")
     } catch (error) {
         console.log(error);
     }
 }
+module.exports.isAdmin = async(req,res)=>{
+    try {
+        
+        const {userId} = req.params;
+        const {isAdmin} = req.body
+        await usersModel.findByIdAndUpdate(userId, {
+            isAdmin: isAdmin === "false"
+        });
+        return res.redirect("/admin?tab=users")
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 
 /**
  * DELETE user

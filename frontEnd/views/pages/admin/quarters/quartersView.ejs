@@ -10,27 +10,26 @@
     }) %>
 <%  } %>
     <div class="grid grid-cols-5 bg-gray-100 text-gray-700 uppercase font-semibold py-3 px-3 rounded-t-lg">
-        <div>name</div>
-        <div>department</div>
-        <div>weight</div>
-        <div>update</div>
-        <div>delete</div>
+        <div>Year</div>
+        <div>Quarter</div>
+        <div>Update</div>
+        <div>Delete</div>
       </div>
         <div id="departmentTable">
         <% if(locals?.data){ %>
             <% data.forEach((item)=>{ %>
-                <%- include("./termsTable.ejs",{data:item})%>
+                <%- include("./quartersTable.ejs",{data:item})%>
             <% }) %>
         <% } %>
     </div>
     <ul id="tableBody" class="w-full">
         <li class="bg-white border-b border-gray-200" id="lastInput">
             <div class="text-blue-600 hover:border-b-blue-500 hover:cursor-pointer  p-3" id="addNewInput">
-                add new Departments
+                add new Quarter
             </div>
         </li>
     </ul>
 </div>
-<script src="/assets/api/admin/terms/addNewInput.js" ></script>
-<script src="/assets/api/admin/terms/addRowOfDepartment.js"></script>
-<script src="/assets/api/admin/terms/departmentAPI.js"></script>
+<script src="/assets/api/admin/quarters/addNewInput.js"></script>
+<script src="/assets/api/admin/quarters/addRowOfquarters.js"></script>
+<script src="/assets/api/admin/quarters/quartersAPI.js"></script>

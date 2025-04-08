@@ -1,47 +1,40 @@
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg mx-5">
-    <div class=" absolute right-0">
-        <%- include("./components/addNewTarget.ejs") %>
+    <div class="absolute right-0">
+      <%- include("./components/addNewTarget.ejs") %>
     </div>
+  
     <table class="w-full text-sm text-left rtl:text-right text-gray-500 mt-5">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-            <tr>
-                <th scope="col" class="px-6 py-3">
-                    name
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    manager
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    start date
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    end date
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    <span class="sr-only">Edit</span>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-6">target</th>
+          <th scope="col" class="px-6 py-3">start date</th>
+          <th scope="col" class="px-6 py-3">end date</th>
+          <th scope="col" class="px-6 py-3"><span class="sr-only">Edit</span></th>
+        </tr>
+      </thead>
+  
+      <tbody>
+        <% if (locals?.targets) { %>
+          <% targets.forEach((item) => { %>
             <tr class="bg-white border-b border-gray-200">
-                <% if(locals?.salesKPIs){ %>
-                    <% salesKPIs.forEach((item)=>{ %>
-                        <tr class="px-6 py-3">
-                            <td class="px-6 py-3">
-                                <a class=" text-blue-600 font-bold text-8" href="target/<%= item._id %>"><%= item.name %></a>
-                            </td>
-                            <td class="px-6 py-3"><%- item.userMangerName %></td>
-                            <td class="px-6 py-3"><%- new Date(item.startDate).toLocaleDateString() %></td>
-                            <td class="px-6 py-3"><%- new Date(item.endDate).toLocaleDateString() %></td>
-                            <td>
-                                <button>
-                                    Edit
-                                </button>
-                            </td>
-                        </tr>
-                    <% }) %>
-                <% } %>
+              <td class="px-6 py-3">
+                <a class="text-blue-600 font-semibold underline" href="/salesKPIs/target/<%= item._id %>">
+                  <%- item.salesTarget.toLocaleString() %>
+                </a>
+              </td>
+              <td class="px-6 py-3">
+                <%- new Date(item.startDate).toLocaleDateString() %>
+              </td>
+              <td class="px-6 py-3">
+                <%- new Date(item.endDate).toLocaleDateString() %>
+              </td>
+              <td class="px-6 py-3">
+                <button class="text-indigo-600 hover:underline">Edit</button>
+              </td>
             </tr>
-        </tbody>
+          <% }) %>
+        <% } %>
+      </tbody>
     </table>
-</div>
+  </div>
+  

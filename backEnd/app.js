@@ -48,7 +48,10 @@ app.use(express.json())
 const db = require("./config/db");
 // Set views and layout
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "../frontEnd/views/pages")); // Adjust if needed
+app.set("views", [
+    path.join(__dirname, "../frontEnd/views/pages"),
+    path.join(__dirname, "../frontEnd/views") // هذا اللي فيه alerts وغيرها
+  ]);
 app.use("/assets",express.static(path.join(__dirname,"../frontEnd/assets")));
 app.use("/socket.io", express.static(path.join(__dirname, "../node_modules/socket.io/client-dist")));
 

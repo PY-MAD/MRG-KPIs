@@ -1,25 +1,22 @@
-<!-- Modal toggle -->
+<!-- زر فتح المودال -->
 <button data-modal-target="default-modal" data-modal-toggle="default-modal"
-    class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center "
-    type="button"
-    id="toggleModule"
-    >
-    Add New Quarter
+    class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+    type="button" id="toggleModule">
+    Add New Quarter Target
 </button>
 
-<!-- Main modal -->
+<!-- المودال -->
 <div id="default-modal" tabindex="-1" aria-hidden="true"
     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-990 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-2xl max-h-full">
-        <!-- Modal content -->
-        <div class="relative bg-white rounded-lg shadow-sm ">
-            <!-- Modal header -->
-            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t  border-gray-200">
-                <h3 class="text-xl font-semibold text-gray-900 ">
-                    Add New Quarter
+        <div class="relative bg-white rounded-lg shadow-sm">
+            <!-- الهيدر -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-900">
+                    Add New Quarter Target
                 </h3>
                 <button type="button"
-                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center :hover:bg-gray-600 :hover:text-white"
+                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
                     data-modal-hide="default-modal">
                     <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                         viewBox="0 0 14 14">
@@ -29,64 +26,145 @@
                     <span class="sr-only">Close modal</span>
                 </button>
             </div>
-            <form method="post" action="target/add">
-                <!-- Modal body -->
+
+            <!-- الفورم -->
+            <form method="post" action="/salesKPIs/target/add">
                 <div class="p-4 md:p-5 space-y-4">
-                    <div class="mb-6">
-                        <div class="relative">
-                            <label for="name" class="block mb-2 text-sm font-medium text-gray-900">Name KPIs</label>
-                            <input id="name" name="name" type="text"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                                placeholder="name of KPIs">
-                        </div>
-                    </div>
-                    <div class="mb-6">
-                        <label for="userResponse" class="block mb-2 text-sm font-medium text-gray-900">choose user</label>
-                        <select id="userResponse" name="userResponse" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <option selected disabled>Choose a User</option>
+
+                    <!-- اختيار الربع -->
+                    <div>
+                        <label for="quarterId" class="block mb-2 text-sm font-medium text-gray-900">Select
+                            Quarter</label>
+                        <select id="quarterId" name="quarterId" class="w-full px-4 py-2 border rounded-xl">
+                            <% quarter.forEach(q=> { %>
+                                <option value="<%= q._id %>" data-months='<%= JSON.stringify(q.months) %>'
+                                    data-year="<%= q.year %>">
+                                    <%= q.year %> - <%= q.quarter %>
+                                </option>
+                                <% }) %>
                         </select>
                     </div>
-                    <div class="mb-6">
-                        <div class="relative">
-                            <label for="startDate" class="block mb-2 text-sm font-medium text-gray-900">Start date</label>
-                            <input type="date" name="startDate" id="startDate" class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 mb-4">
-                        </div>
+
+                    <!-- تاريخ البداية -->
+                    <div>
+                        <label for="startDate" class="block mb-2 text-sm font-medium text-gray-900">Start date</label>
+                        <input type="date" name="startDate" id="startDate" readonly
+                            class="w-full px-4 py-2 border rounded-xl bg-gray-200">
                     </div>
-                    <div class="mb-6">
-                        <div class="relative">
-                            <label for="endDate" class="block mb-2 text-sm font-medium text-gray-900">End date</label>
-                            <input type="date" name="endDate" id="endDate" readonly class="w-full px-4 py-2 border rounded-xl bg-gray-200 mb-4">
-                        </div>
+
+                    <!-- تاريخ النهاية -->
+                    <div>
+                        <label for="endDate" class="block mb-2 text-sm font-medium text-gray-900">End date</label>
+                        <input type="date" name="endDate" id="endDate" readonly
+                            class="w-full px-4 py-2 border rounded-xl bg-gray-200">
                     </div>
+
+                    <!-- التارقت -->
+                    <div>
+                        <label for="displayTarget" class="block mb-2 text-sm font-medium text-gray-900">Quarter Total
+                            Target</label>
+                        <input type="text" id="displayTarget" placeholder="مثال: 120,000"
+                            class="w-full px-4 py-2 border rounded-xl" />
+                        <input type="hidden" name="totalTarget" id="totalTarget" required />
+                    </div>
+
                 </div>
-                <!-- Modal footer -->
-                <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b justify-center w-full">
+
+                <!-- زر الإرسال -->
+                <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b justify-center">
                     <button data-modal-hide="default-modal" type="submit"
-                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">add</button>
+                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                        Add
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-<script src="/assets/api/getUsers.js" type="module"></script>
+
+<!-- السكربتات -->
 <script>
-    let startDateInput = document.getElementById("startDate");
-    let endDateInput = document.getElementById("endDate")
-    startDateInput.addEventListener("change",()=>{
-        let date = new Date(startDateInput.value);
-        let afterThreeMonth = date.getMonth() + 4;
-        let endDate = new Date(date);
-        endDate.setMonth(afterThreeMonth);
-        endDate.setDate(0)
-        endDateInput.value = new Date(endDate).toISOString().split("T")[0];
-        
-    })
-    let toggleButton = document.getElementById("toggleModule");
-    toggleButton.addEventListener("click",()=>{
-        setTimeout(()=>{
-            let bgDark = document.querySelector("div.fixed.inset-0.z-40");
-            bgDark.classList.remove("z-40");
-            bgDark.classList.add("z-110");
-        },100)
-    })
+    const startDateInput = document.getElementById("startDate");
+    const endDateInput = document.getElementById("endDate");
+    const quarterSelect = document.getElementById("quarterId");
+
+    const displayTarget = document.getElementById("displayTarget");
+    const totalTarget = document.getElementById("totalTarget");
+
+    const monthMap = {
+        "January": 0,
+        "February": 1,
+        "March": 2,
+        "April": 3,
+        "May": 4,
+        "June": 5,
+        "July": 6,
+        "August": 7,
+        "September": 8,
+        "October": 9,
+        "November": 10,
+        "December": 11
+      };
+
+    // توليد تواريخ بناء على الربع المختار
+    quarterSelect.addEventListener("change", () => {
+        const selected = quarterSelect.options[quarterSelect.selectedIndex];
+        const months = JSON.parse(selected.getAttribute("data-months"));
+        const year = parseInt(selected.getAttribute("data-year"));
+    
+        if (months.length === 3) {
+            const startMonthIndex = monthMap[months[0]];
+            const endMonthIndex = monthMap[months[2]];
+    
+            // التحقق إن كل شيء مضبوط
+            if (startMonthIndex === undefined || endMonthIndex === undefined) return;
+            const start = new Date(year,startMonthIndex,2);
+            const end = new Date(year,endMonthIndex + 1)
+    
+            // safety check
+            if (isNaN(start.getTime()) || isNaN(end.getTime())) return;
+            startDateInput.value = start.toISOString().split("T")[0];
+            endDateInput.value = end.toISOString().split("T")[0];
+        }
+    });
+
+    // تنسيق الرقم وإزالة الفواصل
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    function cleanNumber(str) {
+        return str.replace(/,/g, "");
+    }
+
+    displayTarget.addEventListener("input", () => {
+        let raw = cleanNumber(displayTarget.value);
+        if (!isNaN(raw)) {
+            totalTarget.value = raw;
+            displayTarget.value = formatNumber(raw);
+        }
+    });
+
+    displayTarget.addEventListener("blur", () => {
+        let raw = cleanNumber(displayTarget.value);
+        if (!isNaN(raw)) {
+            displayTarget.value = formatNumber(raw);
+        }
+    });
+
+    // تعديل طبقة الخلفية عند فتح المودال
+    const toggleButton = document.getElementById("toggleModule");
+    toggleButton.addEventListener("click", () => {
+        setTimeout(() => {
+            const bgDark = document.querySelector("div.fixed.inset-0.z-40");
+            if (bgDark) {
+                bgDark.classList.remove("z-40");
+                bgDark.classList.add("z-110");
+            }
+        }, 100);
+    });
+
+    // تشغيل الحدث مباشرة عند تحميل الصفحة
+    window.addEventListener("DOMContentLoaded", () => {
+        quarterSelect.dispatchEvent(new Event("change"));
+    });
 </script>

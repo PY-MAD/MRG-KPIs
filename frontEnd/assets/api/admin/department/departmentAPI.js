@@ -10,7 +10,7 @@ function handleForm(event){
     }else{
         let name = departmentName.value;
         let manger = departmentManager.value
-        fetch(url+"/Admin/addDepartments",{
+        fetch("/Admin/addDepartments",{
             method:"POST",
             headers: {
                 "Content-type": "application/json; charset=UTF-8"

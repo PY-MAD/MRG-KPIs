@@ -1,34 +1,27 @@
 const usersModel = require("../../models/usersModel");
-const KPIsDefinedModel = require("../../models/KPIsDefinedModel");
+const targetModel = require("../../models/targetModel");
+const quarterModel = require("../../models/quartersModel");
+const departmentsModel = require("../../models/departmentsModel");
 /**
  * GET users 
  */
 module.exports.GETtargetView = async (req, res) => {
     try {
-        // Find all Sales KPIs
-        const findSalesKPIs = await KPIsDefinedModel.find({ department: "Sales" });
-
-        // Extract userManager IDs from Sales KPIs
-        const userManagerIds = findSalesKPIs.map(kpi => kpi.userManger);
-
-        // Fetch users by IDs
-        const findUsers = await usersModel.find({ _id: { $in: userManagerIds } });
-
-        // Map user IDs to their names
-        const userMap = new Map(findUsers.map(user => [user._id.toString(), user.name]));
-
-        // Add user names to the KPIs array
-        const salesKPIsWithUsers = findSalesKPIs.map(kpi => ({
-            ...kpi._doc,
-            userMangerName: userMap.get(kpi.userManger.toString()) || "Unknown"
-        }));
+        const quarter = await quarterModel.find();
+        const department = await departmentsModel.findOne({
+            name:"المبيعات"
+        })
+        const targets = await targetModel.find({
+            department:department._id
+        })
 
         res.render("salesKPIs/target", {
             title: "Sales KPIs Target",
             layout: "../layout.ejs",
             activePage: "Sales KPIs Target",
             user: req.user,
-            salesKPIs: salesKPIsWithUsers
+            quarter,
+            targets
         });
 
     } catch (error) {
@@ -58,31 +51,70 @@ module.exports.GETdetailTarget = async(req,res)=>{
 }
 /**
  * POST Assign new target without configuration
+ * @type {import('express').RequestHandler}
  */
-module.exports.POSTNewTarget = async(req,res)=>{
+module.exports.POSTNewTarget = async (req, res) => {
     try {
-        const {name,userResponse,startDate,endDate} = req.body;
-        if(!name || !userResponse || !startDate || !endDate){
-            req.flash("error","the input's must be filled !");
-            return res.redirect("/salesKPIs/target")
-        }
-        console.log("user email : "+userResponse)
-        const findUserId = await usersModel.findOne({
-            email:userResponse
-        });
-        console.log(findUserId);
-        await KPIsDefinedModel.create({
-            name:name,
-            userManger:findUserId._id,
-            startDate:startDate,
-            endDate:endDate,
-            department:"Sales"
-        });
-        return res.redirect("/salesKPIs/target/");
+      const { quarterId, startDate, endDate, totalTarget } = req.body;
+  
+      if (!quarterId || !startDate || !endDate || !totalTarget) {
+        req.flash("error", "جميع الحقول مطلوبة!");
+        return res.redirect("/salesKPIs/target");
+      }
+  
+      const findDepartment = await departmentsModel.findOne({ name: "المبيعات" });
+      const findQuarter = await quarterModel.findById(quarterId);
+  
+      // تقسيم الشهور من الـ quarter
+      const months = findQuarter.months.map((name) => ({
+        name,
+        achieved: 0,
+        target: totalTarget/3,
+        percentage: 0
+      }));
+  
+      await targetModel.create({
+        department: findDepartment._id,
+        quarter: quarterId,
+        startDate,
+        endDate,
+        salesTarget: totalTarget,
+        months // نمررهم هنا مباشرة
+      });
+  
+      return res.redirect("/salesKPIs/target/");
     } catch (error) {
-        req.flash("error"+error);
-        console.error(error);
-        return res.redirect("/salesKPIs/target/");
+      req.flash("error", "حدث خطأ: " + error.message);
+      console.error(error);
+      return res.redirect("/salesKPIs/target/");
     }
+  };
+  
 
-}
+
+module.exports.PUTKPIs = async(req,res)=>{
+    try {
+        const { id } = req.params;
+        
+        const kpi = await targetModel.findById(id);
+        if (!kpi) return res.status(404).send("KPI not found");
+    
+        kpi.months.forEach((month, index) => {
+          const achievedValue = parseFloat(req.body[`achieved_${index}`]);
+    
+          if (!isNaN(achievedValue) && achievedValue >= 0) {
+            month.achieved = achievedValue;
+            month.percentage = month.target > 0
+              ? Math.round((achievedValue / month.target) * 100)
+              : 0;
+            month.updatedAt = new Date();
+          }
+        });
+    
+        await kpi.save();
+        res.redirect(`/salesKPIs/${id}?success=1`); // ترجع لنفس الصفحة
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("حدث خطأ أثناء التحديث");
+      }
+}  

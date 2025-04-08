@@ -53,7 +53,6 @@ async function scrapeApplicants(APPLICANTS_URL, email, password) {
     headless: false,
     args: ['--start-maximized'],
     defaultViewport: null,
-    executablePath: '/usr/bin/google-chrome-stable'
 });
 
   const page = await browser.newPage();

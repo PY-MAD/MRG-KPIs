@@ -1,0 +1,76 @@
+<div class="p-6 bg-white rounded-lg shadow-md max-w-4xl mx-auto mt-10">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">مؤشرات الأداء للمبيعات - <%= kpi.quarterName %></h2>
+    <h3 class="text-md text-gray-500 mb-6">القسم: <%= kpi.departmentName %></h3>
+  
+    <form action="/salesKPIs/target/update/<%= kpi._id %>?_method=PUT" method="POST">
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm text-right text-gray-700 border border-gray-200 rounded-md">
+          <thead class="text-xs bg-gray-100 text-gray-600 uppercase">
+            <tr>
+              <th class="px-6 py-4 border-b">الشهر</th>
+              <th class="px-6 py-4 border-b">المحقق</th>
+              <th class="px-6 py-4 border-b">المستهدف</th>
+              <th class="px-6 py-4 border-b">نسبة التحقيق</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% kpi.months.forEach((month, index) => { %>
+              <tr class="bg-white hover:bg-gray-50 transition">
+                <td class="px-6 py-4 border-b font-medium text-gray-800"><%= month.name %></td>
+                <td class="px-6 py-4 border-b">
+                  <input
+                    type="text"
+                    name="achieved_<%= index %>"
+                    value="<%= month.achieved || 0 %>"
+                    class="w-24 px-2 py-1 border rounded-md text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    oninput="formatNumberInput(this)"
+                    required
+                    <%= month.achieved > 0 ? "readOnly":"" %>
+                  />
+                </td>
+                <td class="px-6 py-4 border-b"><%= month.target ? month.target.toLocaleString() : "غير محدد" %></td>
+                <td class="px-6 py-4 border-b"><%= month.percentage || 0 %> %</td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+  
+      <div class="text-left mt-6">
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md text-sm font-medium">
+          💾 حفظ التحديثات
+        </button>
+      </div>
+    </form>
+  </div>
+
+
+  <% if (typeof successMessage !== 'undefined') { %>
+<script>
+  Swal.fire({
+    icon: 'success',
+    title: 'تم الحفظ بنجاح',
+    text: '<%= successMessage %>',
+    confirmButtonText: 'حسنًا'
+  });
+</script>
+<% } %>
+
+<script>
+    function formatNumberInput(input) {
+      // أزل كل شيء غير أرقام
+      const rawValue = input.value.replace(/[^\d]/g, "");
+      if (rawValue === "") return (input.value = "");
+  
+      // أعد تنسيقه بفواصل
+      const formatted = Number(rawValue).toLocaleString("en-US");
+      input.value = formatted;
+    }
+  
+    // عند إرسال الفورم، نحول كل القيم إلى أرقام بدون فواصل
+    document.querySelector("form").addEventListener("submit", function (e) {
+      this.querySelectorAll("input[name^='achieved_']").forEach((input) => {
+        input.value = input.value.replace(/,/g, "");
+      });
+    });
+  </script>

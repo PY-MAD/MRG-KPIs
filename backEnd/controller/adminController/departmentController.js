@@ -1,3 +1,4 @@
+const departmentsModel = require("../../models/departmentsModel");
 const departmentModel = require("../../models/departmentsModel");
 const userModel = require("../../models/usersModel");
 /**
@@ -23,6 +24,7 @@ module.exports.POSTnewDepartments = async(req,res)=>{
             ...result._doc,
             mangerName:findUser.name
         }
+        console.log(finalResult);
         res.json({
             status:200,
             message:finalResult
@@ -53,5 +55,35 @@ module.exports.deleteDepartment = async(req,res)=>{
         return res.redirect("/Admin?tab=departments")
     }catch (e) {
         console.error(e)
+    }
+}
+
+/**
+ * @type {import('express').RequestHandler}
+ */
+module.exports.PUTdepartment = async(req,res)=>{
+    try {
+        const {name,departmentManger} = req.body;
+        const {departmentId} = req.params;
+        const findDepartment = await departmentModel.findById(departmentId);
+        if(!findDepartment){
+            req.flash("error","department not found !");
+            return res.redirect("/Admin?tab=departments") 
+        }
+        if(!name || !departmentManger){
+            req.flash("error","something missing !");
+            return res.redirect("/Admin?tab=departments") 
+        }
+        const updateDepartment = await departmentsModel.findByIdAndUpdate(departmentId,
+            {
+                name:name,
+                mangerDepartment:departmentManger
+            }
+        )
+        console.log(updateDepartment)
+        req.flash("success",`the ${name} department has been updated !`)
+        return res.redirect("/Admin?tab=departments")
+    } catch (error) {
+        
     }
 }

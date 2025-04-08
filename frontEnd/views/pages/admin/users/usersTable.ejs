@@ -1,52 +1,16 @@
 <% 
-let userAdmin = data.isAdmin == true ? 'checked' : ''
-let blockedUser = data.isBlocked == true ? 'checked' : ''
+let userAdmin = data.isAdmin
+let blockedUser = data.isBlocked
 %> 
-<tr class="bg-white border-b border-gray-200">
-    <form action="/Admin/changeStateUser/<%= data._id %>?_method=PUT" method="post">
-        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-            <%= data.name %>
-        </th>
-        <td class="px-6 py-4">
-            <label class="inline-flex items-center cursor-pointer">
-                <input 
-                    type="checkbox" 
-                    id="isAdmin" 
-                    name="isAdmin" 
-                    value="<%= userAdmin %>"
-                    <%= userAdmin %>
-                    class="sr-only peer"
-                >
-                <div class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600">
-                </div>
-            </label>
-        </td>
-        <td class="px-6 py-4">
-            <%= data.email %>
-        </td>
-        <td class="px-6 py-4">
-            <label class="inline-flex items-center cursor-pointer">
-                <input 
-                    type="checkbox" 
-                    id="isBlocked" 
-                    name="isBlocked"
-                    value="<%= blockedUser %>"
-                    <%= blockedUser %>
-                    class="sr-only peer"
-                >
-                <div class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600">
-                </div>
-            </label>
-        </td>
-        <td class="px-6 py-4">
-            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-250 font-medium" type="submit">
-                <span class='material-symbols-outlined'>check</span>
-            </button>
-            <form action="/Admin/changeStateUser/<%= data._id %>?_method=DELETE" method="POST">
-                <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-250 font-medium" type="submit">
-                    <span class="material-symbols-outlined">delete</span>
-                </button>
-            </form>
-        </td>
+<div class="grid grid-cols-5 bg-white text-gray-600 py-3 px-3 border-b hover:bg-slate-400 hover:text-white ">
+    <div><%= data.name %></div>
+    <div><%= data.email %></div>
+    <form action="/Admin/adminUser/<%= data._id %>?_method=PUT" method="post">
+      <input type="hidden" name="isAdmin" value="<%= userAdmin %>" >
+      <input type="submit" value="<%= userAdmin %>" class="<%= userAdmin ? "bg-red-600":"bg-blue-600" %> text-white px-3 py-2 rounded hover:brightness-50 transition delay-50 duration-300 ease-in-out">
     </form>
-</tr>
+    <form action="/Admin/blockedUser/<%= data._id %>?_method=PUT" method="post">
+      <input type="hidden"  name="isBlocked" value="<%= blockedUser %>">
+      <input type="submit" value="<%= blockedUser %>" class="<%= blockedUser ? "bg-red-600":"bg-blue-600" %> text-white px-3 py-2 rounded hover:brightness-50 transition delay-50 duration-300 ease-in-out">
+    </form>
+</div>

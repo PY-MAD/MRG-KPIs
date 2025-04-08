@@ -7,7 +7,11 @@ const termsModel = new Schema({
     },
     departmentId:{
         require:true,
-        type:Schema.ObjectId
+        type:[Schema.ObjectId],
+    },
+    weight:{
+        require:true,
+        type:Number
     }
 });
 module.exports = mongoose.model('terms',termsModel);

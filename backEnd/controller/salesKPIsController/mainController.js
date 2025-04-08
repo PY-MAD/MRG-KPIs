@@ -43,24 +43,29 @@ module.exports.GETdashboardView = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
-module.exports.GETSalesKPIs = async(req,res)=>{
-    const quarters = await quarterModel.find().lean(); 
-    const targets = await targetModel.find({quarter:quarters.map((item)=>item._id)});
+module.exports.GETSalesKPIs = async (req, res) => {
+  const quarters = await quarterModel.find().lean();
+  const targets = await targetModel.find({ quarter: quarters.map((q) => q._id) })
+    .populate("quarter")
+    .lean();
 
-    console.log(targets)
-    const marged = quarters.map(q =>({
-        ...q,
-        target:targets
-    }))
-    console.log(marged)
-    res.render("salesKPIs/kpi",{
-        title: "Sales KPIs",
-        layout: "../layout.ejs",
-        activePage: "Sales KPIs",
-        user: req.user,
-        marged
-    })
-}
+  // دمج كل ربع مع التارقيت المرتبط فيه فقط
+  const marged = quarters.map((q) => {
+    const relatedTargets = targets.filter((t) => String(t.quarter._id) === String(q._id));
+    return {
+      ...q,
+      target: relatedTargets,
+    };
+  });
+
+  res.render("salesKPIs/kpi", {
+    title: "Sales KPIs",
+    layout: "../layout.ejs",
+    activePage: "Sales KPIs",
+    user: req.user,
+    marged,
+  });
+};
 
 module.exports.GETtableKPIs = async(req,res)=>{
     const { id } = req.params;

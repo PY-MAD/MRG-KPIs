@@ -64,6 +64,6 @@ app.use("/tanqeeb",tanqeeb)
 app.use("/auth",auth)
 
 
-server.listen(process.env.PORT || 3000, () => {
-    console.log("Server running on port http://localhost:", process.env.PORT || 3000);
+server.listen(process.env.PORT || 3002, () => {
+    console.log(`Server running on port http://localhost:${process.env.PORT || 3002}`);
 });

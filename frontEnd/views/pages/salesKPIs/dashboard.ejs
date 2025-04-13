@@ -49,19 +49,28 @@
   
     <!-- المهام -->
     <div class="overflow-x-auto mt-6">
-      <table class="w-full table-auto text-sm text-right">
+      <table class="w-full table-auto text-sm text-left">
         <thead class="bg-gray-100">
           <tr>
             <th class="px-4 py-2">الربع</th>
+            <th class="px-4 py-2">المحقق</th>
+            <th class="px-4 py-2">المستهدف</th>
             <th class="px-4 py-2">الأداء (%)</th>
           </tr>
         </thead>
         <tbody>
-          <% quarters.forEach(q => { %>
+          <% kpi.forEach((kpi) => { 
+            let total = 0
+            %>
             <tr class="border-b">
-              <td class="px-4 py-2"><%= q.label %></td>
-              <td class="px-4 py-2 font-bold"><%= q.value %> %</td>
-            </tr>
+              <td class="px-4 py-2"><%= kpi.quarter.year + " - " +kpi.quarter.quarter %></td>
+            <% kpi.months.forEach((month)=>{              
+              total = total + month.achieved  }) 
+              %>
+            <td class="px-4 py-2"><%= total %></td>
+            <td class="px-4 py-2"><%= kpi.salesTarget %></td>
+            <td class="px-4 py-2"><%= (total/kpi.salesTarget)*100 %>%</td>
+          </tr>
           <% }) %>
         </tbody>
       </table>

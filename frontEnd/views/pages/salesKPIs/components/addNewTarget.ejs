@@ -77,6 +77,8 @@
                                     <th class="px-4 py-2 border">#</th>
                                     <th class="px-4 py-2 border">Term</th>
                                     <th class="px-4 py-2 border">Weight (%)</th>
+                                    <th class="px-4 py-2 border">target</th>
+
                                 </tr>
                             </thead>
                             <tbody id="termsList"></tbody>
@@ -88,7 +90,7 @@
                             </tfoot>
                         </table>
                     </div>
-
+                    <input type="hidden" name="termsData" id="termsData">
                 </div>
 
                 <!-- زر الإرسال -->
@@ -108,113 +110,122 @@
     const startDateInput = document.getElementById("startDate");
     const endDateInput = document.getElementById("endDate");
     const quarterSelect = document.getElementById("quarterId");
-
+  
     const displayTarget = document.getElementById("displayTarget");
     const totalTarget = document.getElementById("totalTarget");
-
+    const form = document.querySelector("form");
+  
     const monthMap = {
-        "January": 0, "February": 1, "March": 2,
-        "April": 3, "May": 4, "June": 5,
-        "July": 6, "August": 7, "September": 8,
-        "October": 9, "November": 10, "December": 11
+      "January": 0, "February": 1, "March": 2,
+      "April": 3, "May": 4, "June": 5,
+      "July": 6, "August": 7, "September": 8,
+      "October": 9, "November": 10, "December": 11
     };
-
+  
+    let terms = [];
+  
     quarterSelect.addEventListener("change", async () => {
-        const selected = quarterSelect.options[quarterSelect.selectedIndex];
-        const months = JSON.parse(selected.getAttribute("data-months"));
-        const year = parseInt(selected.getAttribute("data-year"));
-        const depId = selected.getAttribute("data-department");
-
-        if (months.length === 3) {
-            const start = new Date(year, monthMap[months[0]], 2);
-            const end = new Date(year, monthMap[months[2]] + 1);
-
-            if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
-                startDateInput.value = start.toISOString().split("T")[0];
-                endDateInput.value = end.toISOString().split("T")[0];
-            }
+      const selected = quarterSelect.options[quarterSelect.selectedIndex];
+      const months = JSON.parse(selected.getAttribute("data-months"));
+      const year = parseInt(selected.getAttribute("data-year"));
+      const depId = selected.getAttribute("data-department");
+  
+      if (months.length === 3) {
+        const start = new Date(year, monthMap[months[0]], 2);
+        const end = new Date(year, monthMap[months[2]] + 1);
+        if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+          startDateInput.value = start.toISOString().split("T")[0];
+          endDateInput.value = end.toISOString().split("T")[0];
         }
-
-        if (depId) {
-            const res = await fetch(`/salesKPIs/terms/by-department/${depId}`);
-            const terms = await res.json();
-
-            const preview = document.getElementById("termsPreview");
-            const termsList = document.getElementById("termsList");
-            const totalWeightCell = document.getElementById("totalWeight");
-            termsList.innerHTML = "";
-            let totalWeight = 0;
-
-            if (terms.length) {
-                const distributedWeight = Math.round((100 / terms.length) * 10) / 10;
-
-                document.getElementById("termsData")?.remove();
-                const input = document.createElement("input");
-                input.type = "hidden";
-                input.name = "termsData";
-                input.id = "termsData";
-                input.value = JSON.stringify(
-                    terms.map((term, index) => {
-                        const row = document.createElement("tr");
-                        row.innerHTML = `
-                            <td class="px-4 py-2 border text-center">${index + 1}</td>
-                            <td class="px-4 py-2 border">${term.name}</td>
-                            <td class="px-4 py-2 border text-center">${distributedWeight}%</td>
-                        `;
-                        termsList.appendChild(row);
-                        totalWeight += distributedWeight;
-                        return {
-                            term: term._id,
-                            weight: distributedWeight,
-                            target: 0,
-                            achieved: 0,
-                            result: 0
-                        };
-                    })
-                );
-                totalWeightCell.textContent = `${totalWeight}%`;
-                document.querySelector("form").appendChild(input);
-                preview.classList.remove("hidden");
-            } else {
-                preview.classList.add("hidden");
-            }
+      }
+  
+      if (depId) {
+        const res = await fetch(`/salesKPIs/terms/by-department/${depId}`);
+        terms = await res.json();
+  
+        const preview = document.getElementById("termsPreview");
+        const termsList = document.getElementById("termsList");
+        const totalWeightCell = document.getElementById("totalWeight");
+        termsList.innerHTML = "";
+        let totalWeight = 0;
+  
+        if (terms.length) {
+          const distributedWeight = Math.round((100 / terms.length) * 10) / 10;
+          totalWeight = distributedWeight * terms.length;
+  
+          terms.forEach((term, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td class="px-4 py-2 border text-center">${index + 1}</td>
+              <td class="px-4 py-2 border">${term.name}</td>
+              <td class="px-4 py-2 border text-center">${distributedWeight}%</td>
+              <td class="px-4 py-2 border">
+                <input type="number" name="termTarget_${term._id}" class="w-full border rounded px-2 py-1 text-sm" placeholder="أدخل المستهدف" required>
+              </td>
+            `;
+            termsList.appendChild(row);
+          });
+  
+          totalWeightCell.textContent = `${totalWeight}%`;
+          preview.classList.remove("hidden");
+        } else {
+          preview.classList.add("hidden");
         }
+      }
     });
-
+  
+    form.addEventListener("submit", () => {
+      const distributedWeight = Math.round((100 / terms.length) * 10) / 10;
+  
+      const structuredTerms = terms.map(term => {
+        const input = document.querySelector(`input[name="termTarget_${term._id}"]`);
+        return {
+          term: term._id,
+          weight: distributedWeight,
+          target: parseFloat(input?.value || 0),
+          achieved: 0,
+          result: 0
+        };
+      });
+  
+      document.getElementById("termsData").value = JSON.stringify(structuredTerms);
+    });
+  
     function formatNumber(num) {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
     function cleanNumber(str) {
-        return str.replace(/,/g, "");
+      return str.replace(/,/g, "");
     }
-
+  
     displayTarget.addEventListener("input", () => {
-        let raw = cleanNumber(displayTarget.value);
-        if (!isNaN(raw)) {
-            totalTarget.value = raw;
-            displayTarget.value = formatNumber(raw);
-        }
+      let raw = cleanNumber(displayTarget.value);
+      if (!isNaN(raw)) {
+        totalTarget.value = raw;
+        displayTarget.value = formatNumber(raw);
+      }
     });
-
+  
     displayTarget.addEventListener("blur", () => {
-        let raw = cleanNumber(displayTarget.value);
-        if (!isNaN(raw)) {
-            displayTarget.value = formatNumber(raw);
-        }
+      let raw = cleanNumber(displayTarget.value);
+      if (!isNaN(raw)) {
+        displayTarget.value = formatNumber(raw);
+      }
     });
-
+  
     const toggleButton = document.getElementById("toggleModule");
     toggleButton.addEventListener("click", () => {
-        setTimeout(() => {
-            const bgDark = document.querySelector("div.fixed.inset-0.z-40");
-            if (bgDark) {
-                bgDark.classList.remove("z-40");
-                bgDark.classList.add("z-110");
-            }
-        }, 100);
+      setTimeout(() => {
+        const bgDark = document.querySelector("div.fixed.inset-0.z-40");
+        if (bgDark) {
+          bgDark.classList.remove("z-40");
+          bgDark.classList.add("z-110");
+        }
+      }, 100);
     });
-
+  
     window.addEventListener("DOMContentLoaded", () => {
-        quarterSelect.dispatchEvent(new Event("change"));
+      quarterSelect.dispatchEvent(new Event("change"));
     });
-</script>
+  </script>
+  

@@ -56,70 +56,115 @@ module.exports.GETdetailTarget = async(req,res)=>{
  * @type {import('express').RequestHandler}
  */
 module.exports.POSTNewTarget = async (req, res) => {
-    try {
-      const { quarterId, startDate, endDate, totalTarget } = req.body;
-  
-      if (!quarterId || !startDate || !endDate || !totalTarget) {
-        req.flash("error", "جميع الحقول مطلوبة!");
-        return res.redirect("/salesKPIs/target");
-      }
-  
-      const findDepartment = await departmentsModel.findOne({ name: "المبيعات" });
-      const findQuarter = await quarterModel.findById(quarterId);
-  
-      // تقسيم الشهور من الـ quarter
-      const months = findQuarter.months.map((name) => ({
-        name,
-        achieved: 0,
-        target: totalTarget/3,
-        percentage: 0
-      }));
-  
-      await targetModel.create({
-        department: findDepartment._id,
-        quarter: quarterId,
-        startDate,
-        endDate,
-        salesTarget: totalTarget,
-        months // نمررهم هنا مباشرة
-      });
-  
-      return res.redirect("/salesKPIs/target/");
-    } catch (error) {
-      req.flash("error", "حدث خطأ: " + error.message);
-      console.error(error);
-      return res.redirect("/salesKPIs/target/");
+  try {
+    const { quarterId, startDate, endDate, totalTarget, termsData } = req.body;
+
+    if (!quarterId || !startDate || !endDate || !totalTarget || !termsData) {
+      req.flash("error", "جميع الحقول مطلوبة!");
+      return res.redirect("/salesKPIs/target");
     }
-  };
-  
+
+    const findQuarter = await quarterModel.findById(quarterId).lean();
+    const findDepartment = await departmentsModel.findOne({ name: "المبيعات" }).lean();
+
+    if (!findQuarter || !findDepartment) {
+      req.flash("error", "تعذر العثور على البيانات المطلوبة");
+      return res.redirect("/salesKPIs/target");
+    }
+
+    const parsedTerms = JSON.parse(termsData); // التيرمز جاهزة من الفرونت
+
+    // نحسب شهريًا: target / 3
+    const monthlyTarget = Math.round(parseFloat(totalTarget) / 3);
+
+    // تجهيز الشهور
+    const months = findQuarter.months.map((monthName) => ({
+      name: monthName,
+      achieved: 0,
+      target: monthlyTarget,
+      percentage: 0,
+      terms: parsedTerms.map(term => ({
+        term: term.term,
+        weight: term.weight,
+        target: term.target,
+        achieved: 0,
+        result: 0,
+      })),
+    }));
+
+    // إنشاء الهدف
+    await targetModel.create({
+      department: findDepartment._id,
+      quarter: quarterId,
+      startDate,
+      endDate,
+      salesTarget: parseFloat(totalTarget),
+      months,
+    });
+
+    req.flash("success", "تم إضافة الهدف بنجاح ✅");
+    return res.redirect("/salesKPIs/target");
+  } catch (error) {
+    console.error("خطأ أثناء إنشاء الهدف:", error.message);
+    req.flash("error", "حدث خطأ داخلي");
+    return res.redirect("/salesKPIs/target");
+  }
+};
 
 
-module.exports.PUTKPIs = async(req,res)=>{
-    try {
-        const { id } = req.params;
-        
-        const kpi = await targetModel.findById(id);
-        if (!kpi) return res.status(404).send("KPI not found");
-    
-        kpi.months.forEach((month, index) => {
-          const achievedValue = parseFloat(req.body[`achieved_${index}`]);
-    
-          if (!isNaN(achievedValue) && achievedValue >= 0) {
-            month.achieved = achievedValue;
-            month.percentage = month.target > 0
-              ? Math.round((achievedValue / month.target) * 100)
-              : 0;
-            month.updatedAt = new Date();
-          }
-        });
-    
-        await kpi.save();
-        res.redirect(`/salesKPIs/${id}?success=1`); // ترجع لنفس الصفحة
-      } catch (error) {
-        console.error(error);
-        res.status(500).send("حدث خطأ أثناء التحديث");
+module.exports.PUTKPIs = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const kpi = await targetModel.findById(id);
+    if (!kpi) return res.status(404).send("KPI not found");
+
+    // تحديث المحقق الشهري
+    for (let i = 0; i < kpi.months.length; i++) {
+      const achievedKey = `achieved_${i}`;
+      const achievedValue = parseFloat(req.body[achievedKey]);
+
+      if (!isNaN(achievedValue)) {
+        const month = kpi.months[i];
+        month.achieved = achievedValue;
+        month.percentage = month.target > 0 ? Math.round((achievedValue / month.target) * 100) : 0;
+        month.updatedAt = new Date();
       }
-}  
+    }
+
+    // معالجة termsData
+    if (req.body.termsData) {
+      const parsedTerms = JSON.parse(req.body.termsData);
+
+      // تجميع التيرمز حسب الـ term ID لتسهيل البحث
+      const termsById = {};
+      parsedTerms.forEach((t) => {
+        if (!termsById[t.term]) termsById[t.term] = [];
+        termsById[t.term].push(t);
+      });
+
+      // تحديث بيانات التيرمز داخل كل شهر
+      for (const month of kpi.months) {
+        for (const term of month.terms) {
+          const matching = termsById[term.term.toString()];
+          if (matching && matching.length) {
+            const match = matching.shift(); // ناخذ أول تطابق ونحدث فيه
+            term.achieved = match.achieved;
+            term.target = match.target;
+            term.weight = match.weight;
+            term.result = match.target > 0 ? (match.achieved / match.target) * match.weight : 0;
+          }
+        }
+      }
+    }
+
+    await kpi.save();
+    res.redirect(`/salesKPIs/${id}?success=1`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("حدث خطأ أثناء التحديث");
+  }
+};
 
 
 module.exports.GETTerms = async (req, res) => {

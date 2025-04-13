@@ -2,7 +2,7 @@ const departmentsModel = require("../../models/departmentsModel");
 const quarterModel = require("../../models/quartersModel");
 const targetModel = require("../../models/targetModel");
 const { calculateTermResults, calculateQuarterPerformance } = require("../../helpers/kpi.utils");
-
+const termModel = require("../../models/termsModel");
 /**
  * GET Dashboard Sales KPIs
  */
@@ -10,7 +10,9 @@ const { calculateTermResults, calculateQuarterPerformance } = require("../../hel
 module.exports.GETdashboardView = async (req, res) => {
   try {
     const kpis = await targetModel.find().populate(["quarter", "months.terms.term"]).lean();
-
+    kpis.forEach((item)=>{
+      console.log(item.months)
+    })
     const months = [];
     const quarters = [];
   
@@ -35,6 +37,7 @@ module.exports.GETdashboardView = async (req, res) => {
       user: req.user,
       quarters, 
       months,
+      kpi:kpis
     });
   } catch (err) {
     console.error(err);
@@ -57,39 +60,56 @@ module.exports.GETSalesKPIs = async (req, res) => {
   });
 
   res.render("salesKPIs/kpi", {
-    title: "Sales KPIs",
+    title: "Sales OKRs",
     layout: "../layout.ejs",
-    activePage: "Sales KPIs",
+    activePage: "Sales OKRs",
     user: req.user,
     marged,
   });
 };
 
-module.exports.GETtableKPIs = async(req,res)=>{
-    const { id } = req.params;
-    const successMessage = req.query.success === "1" ? "تم حفظ التحديثات بنجاح ✅" : undefined;
 
-    try {
-      const findKpi = await targetModel.findById(id).lean();
-      const findDepartment = await departmentsModel.findById(findKpi.department).lean();
-      const findQuarter = await quarterModel.findById(findKpi.quarter).lean();
-  
-      res.render("salesKPIs/components/KPIsTable", {
-        title: `Sales KPIs - ${findQuarter.year} - ${findQuarter.quarter}`,
-        layout: "../layout.ejs",
-        activePage: "Sales KPIs",
-        user: req.user,
-        kpi: {
-          ...findKpi,
-          quarterName: `${findQuarter.year} ${findQuarter.quarter}`,
-          departmentName: findDepartment.name,
-        }
+module.exports.GETtableKPIs = async (req, res) => {
+  const { id } = req.params;
+  const successMessage = req.query.success === "1" ? "تم حفظ التحديثات بنجاح ✅" : undefined;
+
+  try {
+    const findKpi = await targetModel.findById(id).lean();
+    const findDepartment = await departmentsModel.findById(findKpi.department).lean();
+    const findQuarter = await quarterModel.findById(findKpi.quarter).lean();
+
+    // اجلب جميع التيرمز الموجودة في كل الشهور لمرة وحدة
+    const allTermIds = findKpi.months.flatMap((month) =>
+      (month.terms || []).map((t) => t.term)
+    );
+    const termDocs = await termModel.find({ _id: { $in: allTermIds } }).lean();
+
+    // اربط اسم التيرم بكل كائن داخل months.terms
+    findKpi.months.forEach((month) => {
+      if (!month.terms) return;
+      month.terms.forEach((term) => {
+        const termInfo = termDocs.find((t) => t._id.toString() === term.term.toString());
+        if (termInfo) term.term = termInfo; // استبدل ObjectId بكامل المستند
       });
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Server Error");
-    }
-  };
+    });
+
+    res.render("salesKPIs/components/KPIsTable", {
+      title: `Sales KPIs - ${findQuarter.year} - ${findQuarter.quarter}`,
+      layout: "../layout.ejs",
+      activePage: "Sales KPIs",
+      user: req.user,
+      kpi: {
+        ...findKpi,
+        quarterName: `${findQuarter.year} ${findQuarter.quarter}`,
+        departmentName: findDepartment.name,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+};
+
 
 
 

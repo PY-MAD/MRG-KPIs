@@ -18,7 +18,7 @@
           <% targets.forEach((item) => { %>
             <tr class="bg-white border-b border-gray-200">
               <td class="px-6 py-3">
-                <a class="text-blue-600 font-semibold underline" href="/salesKPIs/target/<%= item._id %>">
+                <a class="text-blue-600 font-semibold underline" href="/salesKPIs/<%= item._id %>">
                   <%- item.salesTarget.toLocaleString() %>
                 </a>
               </td>
